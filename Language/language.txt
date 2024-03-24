@@ -1,5 +1,41 @@
 c style syntax
 .nesdev
+
+------Keyword------
+func
+var
+const
+return
+if
+else
+
+int
+bool
+int[l]
+bool[l]
+----Punctuation----
+()
+{}
+[]
+,
+;
+-----Operators-----
++
+-
+&
+|
+^
+<<
+>>
+==
+!=
+!
+&&
+||
+-------Value-------
+true
+false
+0-9
 -------------------
 // this is a comment
 const int myconst;

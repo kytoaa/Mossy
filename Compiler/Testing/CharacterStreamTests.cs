@@ -15,9 +15,15 @@ public class CharacterStreamTests
 
 		while (!stream.End())
 		{
-			data.Append(stream.Next());
+			data.Append(stream.Read());
 		}
 
 		Assert.Equivalent(value, data);
+	}
+
+	[Fact]
+	public void TestComments()
+	{
+		throw new NotImplementedException();
 	}
 }

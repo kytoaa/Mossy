@@ -6,5 +6,6 @@ public enum TokenType
 	Operator,
 	Value,
 	Keyword,
-	Identifier
+	Identifier,
+	End
 }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,10 +30,23 @@ namespace NesDev
 				return;
 			string path = Path.ChangeExtension(_filePath, ".s");
 
-			string text = txtCode.Text;
+			string text = "";
 
 			// TODO Compile here
+			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
+			for (int i = 0; i < 100; i++)
+			{
+				NesDevCompiler.Lexer.Token next = lexer.Next();
+				text += next.Type;
+				text += " ";
+				text += next.Value;
+				text += "\n";
 
+				if (lexer.End())
+					break;
+			}
+
+			Debug.WriteLine(text);
 			File.WriteAllText(path, text);
 		}
 

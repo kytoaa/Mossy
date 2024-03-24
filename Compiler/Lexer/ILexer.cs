@@ -1,8 +1,8 @@
 namespace NesDevCompiler.Lexer;
 
-public interface ICharacterStream
+public interface ILexer
 {
 	Token Peek();
 	Token Next();
-	Token End();
+	bool End();
 }
