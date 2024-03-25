@@ -33,6 +33,7 @@ namespace NesDev
 			string text = "";
 
 			// TODO Compile here
+
 			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
 			for (int i = 0; i < 100; i++)
 			{

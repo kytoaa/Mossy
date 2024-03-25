@@ -8,6 +8,6 @@ public struct Token
 	public Token(TokenType type, string value)
 	{
 		this.Type = type;
-		this.Value = value.Replace("\n", "").Replace("\r", "");
+		this.Value = value;
 	}
 }

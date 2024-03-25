@@ -6,7 +6,7 @@ public class CharacterStream : ICharacterStream
 
 	public CharacterStream(string data)
 	{
-		_data = data;
+		_data = ProcessData(data);
 	}
 
 	public string ProcessData(string data)
@@ -14,7 +14,7 @@ public class CharacterStream : ICharacterStream
 		string cleanedData = "";
 		foreach (string line in data.Split("\n\r".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
 		{
-			string final = line.Replace("\n", "").Replace("\r", "");
+			string final = line;
 			if (!final.Contains("//"))
 			{
 				cleanedData += final;
@@ -24,7 +24,7 @@ public class CharacterStream : ICharacterStream
 			cleanedData += final.Remove(final.IndexOf("//"));
 		}
 
-		cleanedData = cleanedData.ReplaceLineEndings("");
+		cleanedData = cleanedData.Replace("\n", "").Replace("\r", "");
 
 		return cleanedData;
 	}

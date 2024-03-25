@@ -8,12 +8,11 @@ Identifier =
 Punctuation  
 Value 0
 Punctuation ;
-Identifier func
+Keyword func
 Punctuation  
 Identifier myfunc
 Punctuation (
 Punctuation )
 Punctuation  
 Punctuation {
-Identifier 
 Punctuation }
