@@ -1,4 +1,7 @@
-Keyword var
+Keyword const
+Punctuation [
+Identifier $2
+Punctuation ]
 Punctuation  
 Keyword int
 Punctuation  
