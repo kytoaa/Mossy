@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NesDev", "NesDev.csproj", "{19330901-7852-4387-9FCC-B8CFCA5B28CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NesDevCompiler", "NesDevCompiler\NesDevCompiler.csproj", "{9AAD500A-59A7-4929-8A99-6539E28A9BB5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NesDev", "NesDev\NesDev.csproj", "{A2188548-E591-44A5-B156-EA54D933F244}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{19330901-7852-4387-9FCC-B8CFCA5B28CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19330901-7852-4387-9FCC-B8CFCA5B28CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19330901-7852-4387-9FCC-B8CFCA5B28CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19330901-7852-4387-9FCC-B8CFCA5B28CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AAD500A-59A7-4929-8A99-6539E28A9BB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AAD500A-59A7-4929-8A99-6539E28A9BB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AAD500A-59A7-4929-8A99-6539E28A9BB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AAD500A-59A7-4929-8A99-6539E28A9BB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2188548-E591-44A5-B156-EA54D933F244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2188548-E591-44A5-B156-EA54D933F244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2188548-E591-44A5-B156-EA54D933F244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2188548-E591-44A5-B156-EA54D933F244}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
