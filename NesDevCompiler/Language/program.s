@@ -1,7 +1,4 @@
-Keyword const
-Punctuation [
-Identifier $2
-Punctuation ]
+Keyword var
 Punctuation  
 Keyword int
 Punctuation  
@@ -18,4 +15,13 @@ Punctuation (
 Punctuation )
 Punctuation  
 Punctuation {
+Identifier 	if
+Punctuation  
+Punctuation (
+Value true
+Punctuation )
+Punctuation  
+Punctuation {
+Identifier 			
+Punctuation }
 Punctuation }

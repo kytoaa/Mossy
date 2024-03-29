@@ -4,7 +4,7 @@ namespace NesDevCompiler.Lexer;
 
 public static class TokenIdentifier
 {
-	public static readonly string[] Punctuation = { "{", "}", "(", ")", "[", "]", ";", ",", " ", "	"};
+	public static readonly string[] Punctuation = { "{", "}", "(", ")", "[", "]", ";", ",", " "};
 	public static readonly string[] Operators = { "+", "-", "&", "|", "^", "<<", ">>", "==", "!=", "!", "&&", "||" };
 	public static readonly string[] Keywords = { "func", "var", "const", "return", "if", "else", "int", "bool" };
 

@@ -1,5 +1,8 @@
 var int i = 0;
 
 func myfunc() {
-
+	forinti = 2;
+	if (true) {
+		// true
+	}
 }
