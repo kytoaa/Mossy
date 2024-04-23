@@ -26,6 +26,8 @@ public class CharacterStream : ICharacterStream
 
 		cleanedData = cleanedData.Replace("\n", "").Replace("\r", "");
 
+		cleanedData = cleanedData.Replace("	", "");
+
 		return cleanedData;
 	}
 

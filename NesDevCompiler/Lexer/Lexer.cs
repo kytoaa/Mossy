@@ -46,7 +46,7 @@ public class Lexer : ILexer
 
 			TokenType type = TokenIdentifier.GetTokenType(token);
 
-			if (type != TokenType.Identifier)
+			if (type == TokenType.Punctuation)
 			{
 				if (consume)
 					stream.Read();
