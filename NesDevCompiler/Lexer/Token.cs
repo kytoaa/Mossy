@@ -7,7 +7,12 @@ public struct Token
 
 	public Token(TokenType type, string value)
 	{
-		this.Type = type;
-		this.Value = value;
+		Type = type;
+		Value = value;
+	}
+
+	public static explicit operator string(Token token)
+	{
+		return token.Value;
 	}
 }

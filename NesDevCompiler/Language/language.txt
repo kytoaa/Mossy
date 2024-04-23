@@ -42,7 +42,6 @@ const int myconst;
 var int myvar;
 
 -----Functions-----
-// functions can have 1 argument
 func int MyFunction(int myarg) {
 	myarg += 1;
 	return myarg;
@@ -78,3 +77,93 @@ add:
 lda #$01
 sta param
 jsr add1
+
+------------------------------------
+--------------CONTEXTS--------------
+------------------------------------
+address $00 - context pointer
+address $01 - global context length
+address $02 - next context length
+
+
+----------Example----------
+func int Add(int a, int b) {
+	a = a + b;
+	return a;
+}
+Add(3, 2)
+
+{
+	func
+	children = {
+		int,
+		{
+			Add,
+			{
+				int,
+				a,
+				int,
+				b
+			}
+		}
+	
+			
+
+---------------------------
+create_context:
+  clc
+  ldx $00
+  txa
+  adc $00, x ; 5, 0, 0, 0, 0, 3, 1, 2, z
+  sta $00
+  tay
+  txa
+  sta $01, y
+  tya
+  tax
+  lda $02
+  sta $00, x
+  rts
+
+clear_context:
+  lda $00
+  tax
+  sbc $01, x
+  sta $00
+  rts
+
+call_Add:
+  lda #$03
+  sta $02
+  jsr create_context
+  clc
+  lda $00
+  adc #$01
+  tax
+  lda #$03
+  sta $00, x
+
+  clc
+  lda $00
+  adc #$02
+  tax
+  lda #$02
+  sta $00, x
+
+  jsr Add
+  rts
+
+Add:
+  clc
+  lda $00 ; load the current context address
+  adc #$01 ; add 1 for the first variable
+  tax
+  lda $00, x
+  tay
+  lda $00 ; load the current context address
+  adc #$02 ; add 1 for the first variable
+  tax
+  tya
+  adc $00, x
+  rts
+

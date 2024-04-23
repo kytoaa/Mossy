@@ -35,7 +35,7 @@ namespace NesDev
 			// TODO Compile here
 
 			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
-			for (int i = 0; i < 100; i++)
+			while (!lexer.End())
 			{
 				NesDevCompiler.Lexer.Token next = lexer.Next();
 				text += next.Type;
@@ -47,7 +47,6 @@ namespace NesDev
 					break;
 			}
 
-			Debug.WriteLine(text);
 			File.WriteAllText(path, text);
 		}
 

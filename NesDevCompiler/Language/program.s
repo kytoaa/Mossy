@@ -4,7 +4,7 @@ Keyword int
 Punctuation  
 Identifier i
 Punctuation  
-Identifier =
+Operator =
 Punctuation  
 Value 0
 Punctuation ;
@@ -15,13 +15,30 @@ Punctuation (
 Punctuation )
 Punctuation  
 Punctuation {
-Identifier 	if
+Identifier forinti
+Punctuation  
+Operator =
+Punctuation  
+Value 203
+Punctuation ;
+Keyword if
 Punctuation  
 Punctuation (
-Value true
+Identifier forinti
+Punctuation  
+Operator ==
+Punctuation  
+Value 2
 Punctuation )
 Punctuation  
 Punctuation {
-Identifier 			
+Identifier forinti
+Punctuation  
+Operator =
+Punctuation  
+Identifier forinti
+Punctuation  
+Operator <<
+Punctuation ;
 Punctuation }
 Punctuation }
