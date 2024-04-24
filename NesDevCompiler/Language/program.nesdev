@@ -2,7 +2,7 @@ var int i = 0;
 
 func myfunc() {
 	forinti = 203;
-	if (forinti == 2) {
-		forinti = forinti <<;
+	if (forinti < 2) {
+		forinti = << forinti;
 	}
 }

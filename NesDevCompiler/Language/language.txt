@@ -78,6 +78,15 @@ lda #$01
 sta param
 jsr add1
 
+------------State Machine-----------
+base -> var[var] | func[function] | const[constant]
+var -> type & identifier + =[assignment] & ;[out]
+function -> type & identifier + *var(var) & {[context] & }[base]
+context -> var[var] | func[function] | const[constant] | (. where . is identifier)[expression]
+expression -> =[assignment] | (( + *(. where . is value) & ))
+assignment -> . where . is value
+
+
 ------------------------------------
 --------------CONTEXTS--------------
 ------------------------------------

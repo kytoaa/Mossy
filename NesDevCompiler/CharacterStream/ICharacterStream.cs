@@ -3,7 +3,7 @@ namespace NesDevCompiler.CharacterStream;
 /// <summary>
 /// Represents an abstract Character Stream.
 /// </summary>
-public interface ICharacterStream
+public interface ICharacterStream : ICloneable
 {
 	/// <summary>
 	/// View the next character in the stream without removing it.

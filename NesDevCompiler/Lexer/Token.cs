@@ -1,6 +1,8 @@
+using System.Numerics;
+
 namespace NesDevCompiler.Lexer;
 
-public struct Token
+public record struct Token
 {
 	public TokenType Type;
 	public string Value;

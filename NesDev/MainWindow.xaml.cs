@@ -37,7 +37,10 @@ namespace NesDev
 			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
 			while (!lexer.End())
 			{
-				NesDevCompiler.Lexer.Token next = lexer.Next();
+				NesDevCompiler.Lexer.Token peekNext = lexer.Peek(true);
+				NesDevCompiler.Lexer.Token next = lexer.Next(true);
+				if (peekNext != next)
+					throw new Exception();
 				text += next.Type;
 				text += " ";
 				text += next.Value;
@@ -54,7 +57,7 @@ namespace NesDev
 		{
 			// Configure open file dialog box
 			var dialog = new Microsoft.Win32.OpenFileDialog();
-			dialog.FileName = "Document"; // Default file name
+			dialog.FileName = "program"; // Default file name
 			dialog.DefaultExt = ".nesdev"; // Default file extension
 			dialog.Filter = "NesDev documents (.nesdev)|*.nesdev"; // Filter files by extension
 
