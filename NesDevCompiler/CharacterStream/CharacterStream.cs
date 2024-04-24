@@ -55,4 +55,9 @@ public class CharacterStream : ICharacterStream
 	{
 		return _data.Count() <= 0;
 	}
+
+	public object Clone()
+	{
+		return new CharacterStream(_data);
+	}
 }

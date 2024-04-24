@@ -12,16 +12,27 @@ public class Lexer : ILexer
 		_stream = stream;
 	}
 
-	public Token Peek()
+	public Token Peek(bool ignoreWhitespace = true)
 	{
-		Token token = GetToken(_stream, false);
+		ICharacterStream stream = (ICharacterStream)_stream.Clone();
+		Token token = GetToken(stream);
+
+		while (token.Value == " ")
+		{
+			token = GetToken(stream);
+		}
 
 		return token;
 	}
 
-	public Token Next()
+	public Token Next(bool ignoreWhitespace = true)
 	{
-		Token token = GetToken(_stream, true);
+		Token token = GetToken(_stream);
+
+		while (token.Value == " ")
+		{
+			token = GetToken(_stream);
+		}
 
 		return token;
 	}
@@ -31,16 +42,15 @@ public class Lexer : ILexer
 		return _stream.End();
 	}
 
-	public Token GetToken(ICharacterStream stream, bool consume)
+	public Token GetToken(ICharacterStream stream)
 	{
 		string token = "";
 		string prev = "";
-		int i = 0;
 		while (true)
 		{
 			if (stream.End())
 				return new Token(TokenType.End, "");
-			char c = consume ? stream.Peek() : stream.Peek(i);
+			char c = stream.Peek();
 			prev = token;
 			token += c;
 
@@ -48,8 +58,7 @@ public class Lexer : ILexer
 
 			if (type == TokenType.Punctuation)
 			{
-				if (consume)
-					stream.Read();
+				stream.Read();
 				return new Token(type, token);
 			}
 			if (!string.IsNullOrEmpty(prev))
@@ -60,9 +69,7 @@ public class Lexer : ILexer
 					return new Token(idenType, prev);
 				}
 			}
-			if (consume)
-				stream.Read();
-			i++;
+			stream.Read();
 		}
 	}
 }

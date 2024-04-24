@@ -12,18 +12,25 @@ public class Parser : IParser
 
 	private Node ParseAST(ILexer lexer)
 	{
-		Node root = new GlobalContext();
+		Node root = new Context();
+		Tree tree = new Tree(root);
 
-		while (!lexer.End())
+		StateMachine stateMachine = new StateMachine();
+
+
+/*		while (!lexer.End())
 		{
 			Token token = lexer.Next();
 
-			if (token.Type == TokenType.Keyword)
+			stateMachine.Parse(token, tree);
+
+			if (tree.current is CompileError)
 			{
-				//if (token.Value == "")
+				return tree.current;
 			}
-		}
+		}*/
 
 		throw new NotImplementedException();
+		return root;
 	}
 }

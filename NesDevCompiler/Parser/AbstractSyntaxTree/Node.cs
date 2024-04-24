@@ -2,7 +2,7 @@
 
 public abstract class Node
 {
-	public List<Node> children = new List<Node>();
+	//public List<Node> children = new List<Node>();
 	public Node parent;
 	
 	public bool IsRoot => parent == null;
