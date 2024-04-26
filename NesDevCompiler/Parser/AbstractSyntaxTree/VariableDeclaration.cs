@@ -17,5 +17,7 @@ public class VariableDeclaration : Node
 		IsArray = isArray;
 		Size = size;
 		Assignent = assignent;
+		if (assignent != null)
+			assignent.parent = this;
 	}
 }

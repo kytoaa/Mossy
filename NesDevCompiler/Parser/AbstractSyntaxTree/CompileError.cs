@@ -1,11 +1,9 @@
 namespace NesDevCompiler.Parser.AbstractSyntaxTree;
 
-public class CompileError : Node
+public class CompileError : Exception
 {
-	public readonly string Error;
-
-	public CompileError(Node parent, string error) : base(parent)
+	public CompileError(string? message) : base(message)
 	{
-		Error = error;
+
 	}
 }

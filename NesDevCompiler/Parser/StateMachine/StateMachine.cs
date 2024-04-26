@@ -1,39 +1,111 @@
 ﻿using NesDevCompiler.Lexer;
 using NesDevCompiler.Parser.AbstractSyntaxTree;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace NesDevCompiler.Parser;
 
 public class StateMachine
 {
-	public void Parse(ILexer lexer, Tree tree)
+	public Node Parse(ILexer lexer, Tree tree)
 	{
-		
+		return GlobalContextState(lexer);
 	}
 
-	private Tree GlobalContextState(ILexer lexer, Tree tree)
+	private Context GlobalContextState(ILexer lexer)
 	{
-		Token token = lexer.Next();
-		if (token.Type != TokenType.Keyword)
-			return ThrowError($"Syntax Error: {token.Value} is not a valid keyword!", tree);
+		Context globalContext = new Context();
 
-		if (token.Value == "var")
+		while (!lexer.End())
 		{
-			// TODO var declaration stuff idk
+			Token token = lexer.Next();
+			if (token.Type != TokenType.Keyword)
+				throw new CompileError($"Syntax Error: {token.Value} is not a valid keyword!");
+
+			if (token.Value == "var")
+			{
+				globalContext.variables.Add(VarState(lexer, globalContext));
+			}
+			else if (token.Value == "func")
+			{
+				globalContext.functions.Add(FunctionState(lexer, globalContext));
+			}
+			//else
+				//throw new CompileError($"Syntax Error: {token.Value} is not a valid keyword! Only functions and declarations valid in this context!");
 		}
-		if (token.Value == "func")
-		{
-			// TODO func declaration
-		}
+		return globalContext;
 
 
-		return ThrowError($"Syntax Error: {token.Value} is not a valid keyword! Only functions and declarations valid in this context!", tree);
 	}
 
-	private Tree VarState(ILexer lexer, Tree tree)
+	private Context FunctionContextState(ILexer lexer, Node parent)
+	{
+		Context context = new Context();
+		while (lexer.Peek().Value != "}")
+		{
+			Token next = lexer.Next();
+			if ((next.Type != TokenType.Identifier) && (next.Type != TokenType.Keyword))
+				throw new CompileError($"Syntax Error: {next.Value} is not a valid statement!");
+
+			if (next.Value == "var")
+			{
+				context.variables.Add(VarState(lexer, context));
+			}
+			if (next.Value == "if")
+			{
+				IfStatementState(lexer, context);
+			}
+			if (next.Type == TokenType.Identifier)
+			{
+				Token funcOrAssign = lexer.Next();
+				if ((funcOrAssign.Value != "(") && (funcOrAssign.Value != "="))
+					throw new CompileError($"Syntax Error: {next.Value} {funcOrAssign.Value} is not a valid statement, only assignments and function calls are allowed!");
+
+				if (funcOrAssign.Value == "(")
+				{
+					List<Expression> args = new List<Expression>();
+					while (lexer.Peek().Value != ")")
+					{
+						if (lexer.Peek().Value == ";")
+							break;
+						args.Add(ParseExpression(lexer));
+					}
+					Token closeBrackets = lexer.Next();
+					if (closeBrackets.Value != ")")
+						throw new CompileError($"Syntax Error: argument list must be closed!");
+
+					Token endStatement = lexer.Next();
+					if (endStatement.Value != ";")
+						throw new CompileError($"Syntax Error: function declaration never ends, you forgot a semicolon!");
+					context.statements.Add(new FunctionCall(context) { Arguments = args });
+				}
+				else if (funcOrAssign.Value == "=")
+				{
+					context.statements.Add(new VariableAssignent(context, next.Value, ParseExpression(lexer)));
+					Token endStatement = lexer.Next();
+					if (endStatement.Value != ";")
+						throw new CompileError($"Syntax Error: function declaration never ends, you forgot a semicolon!");
+				}
+				else
+					throw new CompileError($"Syntax Error: not a valid statement, only assignments and function calls are allowed!");
+			}
+		}
+		Token closeCurly = lexer.Next();
+		if (closeCurly.Value != "}")
+			throw new CompileError($"Syntax Error: function body not closed");
+		return context;
+	}
+
+	private void IfStatementState(ILexer lexer, Context parent)
+	{
+
+	}
+
+	private VariableDeclaration VarState(ILexer lexer, Node parent)
 	{
 		Token varType = lexer.Next();
 		if (varType.Value != "bool" && varType.Value != "int")
-			return ThrowError($"Syntax Error: {varType.Value} is not a valid type!", tree);
+			throw new CompileError($"Syntax Error: {varType.Value} is not a valid type!");
 
 		bool isArray = lexer.Peek().Value == "[";
 		int length = 1;
@@ -42,46 +114,83 @@ public class StateMachine
 			lexer.Next();
 			Token arrayLength = lexer.Next();
 			if (!int.TryParse(arrayLength.Value, out length))
-				return ThrowError($"Syntax Error: {arrayLength.Value} is not a valid integer length!", tree);
+				throw new CompileError($"Syntax Error: {arrayLength.Value} is not a valid integer length!");
 			if (length < 1)
-				return ThrowError($"Syntax Error: {arrayLength.Value} is not a valid array length!", tree);
+				throw new CompileError($"Syntax Error: {arrayLength.Value} is not a valid array length!");
 
 			Token arrayClose = lexer.Next();
 			if (arrayClose.Value != "]")
-				return ThrowError($"Syntax Error: length of array only accepts one argument!", tree);
+				throw new CompileError($"Syntax Error: length of array only accepts one argument!");
 		}
 
 		Token varIdentifier = lexer.Next();
 		if (varIdentifier.Type != TokenType.Identifier)
-			return ThrowError($"Syntax Error: {varIdentifier.Value} is not a valid identifier!", tree);
+			throw new CompileError($"Syntax Error: {varIdentifier.Value} is not a valid identifier!");
+		
+		Token end = lexer.Next();
 
-		if (lexer.Peek().Value == ";")
+		if (end.Value == ";")
 		{
-			VariableDeclaration variable = new VariableDeclaration(tree.current, varIdentifier.Value, varType.Value, isArray, length);
-			((Context)tree.current).variables.Add(variable);
-			return tree;
+			VariableDeclaration variable = new VariableDeclaration(parent, varIdentifier.Value, varType.Value, isArray, length);
+			return variable;
 		}
-		else if (lexer.Peek().Value == "=")
+		else if (end.Value == "=")
 		{
-
+			if (isArray)
+				throw new CompileError($"Syntax Error: arrays cannot be initialized with expressions!");
+			VariableAssignent assignment = new VariableAssignent(null, varIdentifier.Value, ParseExpression(lexer));
+			VariableDeclaration declaration = new VariableDeclaration(parent, varIdentifier.Value, varType.Value, isArray, length, assignment);
+			Token semicolon = lexer.Next();
+			if (semicolon.Value != ";")
+				throw new CompileError($"Syntax Error: variable declaration not closed, did you forget a semicolon!");
+			return declaration;
 		}
 
-		return ThrowError($"Syntax Error: length of array only accepts one argument!", tree);
+		throw new CompileError($"Syntax Error: not a valid variable declaration!");
 	}
 
-	private Expression ParseExpression(ILexer lexer, Tree tree)
+	private FunctionDeclaration FunctionState(ILexer lexer, Context context)
 	{
-		Token next = lexer.Next();
-		if (next.Type == TokenType.Identifier)
-		{
-			if (lexer.Peek().Value == "(")
-			{
-				return ParseFunction(lexer, next.Value);
-			}
-			return new DeclaredVariable(tree.current, "default", next.Value);
-		}
+		Token functionType = lexer.Next();
+		if (functionType.Value != "bool" && functionType.Value != "int")
+			throw new CompileError($"Syntax Error: {functionType.Value} is not a valid type!");
 
-		throw new NotImplementedException();
+		Token functionIdentifier = lexer.Next();
+		if (functionIdentifier.Type != TokenType.Identifier)
+			throw new CompileError($"Syntax Error: {functionIdentifier.Value} is not a valid identifier!");
+
+		Token openBrackets = lexer.Next();
+		if (openBrackets.Value != "(")
+			throw new CompileError($"Syntax Error: function declaration must open with an optional argument list!");
+
+		FunctionDeclaration functionDeclaration = new FunctionDeclaration(context);
+
+		List<VariableDeclaration> arguments = new List<VariableDeclaration>();
+		while (lexer.Peek().Value != ")")
+		{
+			arguments.Add(VarState(lexer, functionDeclaration));
+		}
+		lexer.Next();
+		Token openCurly = lexer.Next();
+		if (openCurly.Value != "{")
+			throw new CompileError($"Syntax Error: function declaration must have a body!");
+
+		Context functionContext = FunctionContextState(lexer, functionDeclaration);
+
+		functionDeclaration.Arguments = arguments;
+		functionDeclaration.Body = functionContext;
+		functionDeclaration.Identifier = functionIdentifier.Value;
+		functionDeclaration.Size = functionContext.variables.Count;
+
+		return functionDeclaration;
+	}
+
+	private Expression ParseExpression(ILexer lexer)
+	{
+		Expression expression = new ExpressionParser().Parse(lexer);
+		//expression.parent = tree.current;
+
+		return expression;
 	}
 
 	private FunctionCall ParseFunction(ILexer lexer, string identifier)
@@ -90,9 +199,9 @@ public class StateMachine
 	}
 
 
-	private Tree ThrowError(string error, Tree tree)
+/*	private Tree ThrowError(string error, Tree tree)
 	{
 		tree.current = new CompileError(tree.current, error);
 		return tree;
-	}
+	}*/
 }

@@ -9,5 +9,6 @@ public class VariableAssignent : Statement
 	{
 		Identifier = identifier;
 		Expression = expression;
+		Expression.parent = this;
 	}
 }

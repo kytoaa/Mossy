@@ -26,6 +26,8 @@ namespace NesDev
 
 		private void ButtonCompile_Click(object sender, RoutedEventArgs e)
 		{
+			//new NesDevCompiler.Parser.AbstractSyntaxTree.ExpressionParser().Parse(new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream("(1 + 3) - 2;")));
+
 			if (string.IsNullOrEmpty(_filePath))
 				return;
 			string path = Path.ChangeExtension(_filePath, ".s");
@@ -35,12 +37,19 @@ namespace NesDev
 			// TODO Compile here
 
 			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
-			while (!lexer.End())
+			try
 			{
-				NesDevCompiler.Lexer.Token peekNext = lexer.Peek(true);
-				NesDevCompiler.Lexer.Token next = lexer.Next(true);
-				if (peekNext != next)
-					throw new Exception();
+				NesDevCompiler.Parser.AbstractSyntaxTree.Node node = new NesDevCompiler.Parser.Parser().Parse(lexer);
+				Debug.WriteLine(node);
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+/*			while (!lexer.End())
+			{
+				NesDevCompiler.Lexer.Token next = lexer.Next();
+
 				text += next.Type;
 				text += " ";
 				text += next.Value;
@@ -50,7 +59,7 @@ namespace NesDev
 					break;
 			}
 
-			File.WriteAllText(path, text);
+			File.WriteAllText(path, text);*/
 		}
 
 		private void ButtonFileOpen_Click(object sender, RoutedEventArgs e)
