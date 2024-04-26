@@ -7,7 +7,7 @@ public class Parser : IParser
 {
 	public Node Parse(ILexer lexer)
 	{
-		throw new NotImplementedException();
+		return ParseAST(lexer);
 	}
 
 	private Node ParseAST(ILexer lexer)
@@ -16,7 +16,7 @@ public class Parser : IParser
 		Tree tree = new Tree(root);
 
 		StateMachine stateMachine = new StateMachine();
-
+		return stateMachine.Parse(lexer, tree);
 
 /*		while (!lexer.End())
 		{

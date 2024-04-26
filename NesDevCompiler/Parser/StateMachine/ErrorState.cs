@@ -16,7 +16,7 @@ public class ErrorState : State
 	{
 		if (tree.current is CompileError)
 			return this;
-		tree.current.children.Add(new CompileError(tree.current, Error));
+		//tree.current.children.Add(new CompileError(tree.current, Error));
 		return this;
 	}
 }

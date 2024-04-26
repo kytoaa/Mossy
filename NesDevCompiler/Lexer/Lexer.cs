@@ -12,14 +12,36 @@ public class Lexer : ILexer
 		_stream = stream;
 	}
 
-	public Token Peek(bool ignoreWhitespace = true)
+	public Token Peek(bool ignoreWhitespace = true, int t = 0)
 	{
 		ICharacterStream stream = (ICharacterStream)_stream.Clone();
 		Token token = GetToken(stream);
 
-		while (token.Value == " ")
+		if (t == 0 && ignoreWhitespace)
 		{
-			token = GetToken(stream);
+			while (token.Value == " ")
+			{
+				token = GetToken(stream);
+			}
+			return token;
+		}
+		for (int i = 0; i < t; i++)
+		{
+			if (ignoreWhitespace)
+			{
+				if (token.Value != " ")
+				{
+					token = GetToken(stream);
+				}
+				while (token.Value == " ")
+				{
+					token = GetToken(stream);
+				}
+			}
+			else
+			{
+				token = GetToken(stream);
+			}
 		}
 
 		return token;

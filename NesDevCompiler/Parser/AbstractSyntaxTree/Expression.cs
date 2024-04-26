@@ -8,4 +8,10 @@ public abstract class Expression : Node
 	{
 		Type = type;
 	}
+
+	public Expression SetParent(Node parent)
+	{
+		this.parent = parent;
+		return this;
+	}
 }
