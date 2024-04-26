@@ -3,4 +3,12 @@ var int i = 0;
 func int MyFunc() {
 	i = (3 + 2);
 	OtherFunc(2);
+	if (true) {
+		i = 4;
+	}
+	else {
+		while ((i < 3)) {
+			i = (i + 1);
+		}
+	}
 }

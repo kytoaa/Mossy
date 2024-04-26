@@ -6,6 +6,7 @@ func
 var
 const
 return
+for (i, 3)
 if
 else
 
