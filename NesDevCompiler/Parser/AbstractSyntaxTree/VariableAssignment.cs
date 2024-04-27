@@ -1,9 +1,20 @@
 namespace NesDevCompiler.Parser.AbstractSyntaxTree;
 
-public class VariableAssignent : Statement
+public class VariableAssignent : Node, IStatement
 {
 	public string Identifier;
 	public Expression Expression;
+
+	public override List<Node> GetChildren()
+	{
+		List<Node> children = [Expression];
+		return children;
+	}
+
+	public Node AsNode()
+	{
+		return this;
+	}
 
 	public VariableAssignent(Node parent, string identifier, Expression expression) : base(parent)
 	{

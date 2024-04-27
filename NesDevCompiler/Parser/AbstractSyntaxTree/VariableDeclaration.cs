@@ -10,6 +10,16 @@ public class VariableDeclaration : Node
 
 	public VariableAssignent? Assignent;
 
+	public override List<Node> GetChildren()
+	{
+		List<Node> children = new List<Node>();
+		if (Assignent != null)
+		{
+			children.Add(Assignent);
+		}
+		return children;
+	}
+
 	public VariableDeclaration(Node parent, string identifier, string type, bool isArray = false, int size = 1, VariableAssignent? assignent = null) : base(parent)
 	{
 		Identifier = identifier;

@@ -37,14 +37,16 @@ namespace NesDev
 			// TODO Compile here
 
 			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
+			txtErrorMessage.Content = "";
 			try
 			{
 				NesDevCompiler.Parser.AbstractSyntaxTree.Node node = new NesDevCompiler.Parser.Parser().Parse(lexer);
 				Debug.WriteLine(node);
+				txtErrorMessage.Content = "Compiled!";
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine(ex.Message);
+				txtErrorMessage.Content = ex.Message;
 			}
 /*			while (!lexer.End())
 			{

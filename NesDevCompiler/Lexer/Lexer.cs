@@ -17,13 +17,12 @@ public class Lexer : ILexer
 		ICharacterStream stream = (ICharacterStream)_stream.Clone();
 		Token token = GetToken(stream);
 
-		if (t == 0 && ignoreWhitespace)
+		if (ignoreWhitespace)
 		{
 			while (token.Value == " ")
 			{
 				token = GetToken(stream);
 			}
-			return token;
 		}
 		for (int i = 0; i < t; i++)
 		{

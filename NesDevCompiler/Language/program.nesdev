@@ -1,13 +1,17 @@
 var int i = 0;
 
+func int OtherFunc() {
+	var int t = 1;
+}
+
 func int MyFunc() {
 	i = (3 + 2);
-	OtherFunc(2);
+	var int t = OtherFunc();
 	if (true) {
 		i = 4;
 	}
 	else {
-		while ((i < 3)) {
+		while (t < 3) {
 			i = (i + 1);
 		}
 	}
