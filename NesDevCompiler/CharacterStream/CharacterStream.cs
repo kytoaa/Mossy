@@ -26,6 +26,8 @@ public class CharacterStream : ICharacterStream
 
 		cleanedData = cleanedData.Replace("\n", "").Replace("\r", "");
 
+		cleanedData = cleanedData.Replace("	", "");
+
 		return cleanedData;
 	}
 
@@ -52,5 +54,10 @@ public class CharacterStream : ICharacterStream
 	public bool End()
 	{
 		return _data.Count() <= 0;
+	}
+
+	public object Clone()
+	{
+		return new CharacterStream(_data);
 	}
 }

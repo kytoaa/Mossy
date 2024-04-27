@@ -11,6 +11,7 @@
             <RowDefinition Height="30" />
             <RowDefinition Height="30"/>
             <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
 
@@ -23,6 +24,8 @@
         <Label Grid.Row="1" x:Name="txtFileName">Untitled</Label>
         
         <TextBox Grid.Row="2" x:Name="txtCode" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible"></TextBox>
+
+        <Label Grid.Row="3" x:Name="txtErrorMessage"></Label>
 
     </Grid>
 </Window>

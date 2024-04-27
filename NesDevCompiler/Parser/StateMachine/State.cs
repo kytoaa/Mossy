@@ -3,7 +3,8 @@ using NesDevCompiler.Parser.AbstractSyntaxTree;
 
 namespace NesDevCompiler.Parser;
 
-public interface IParser
+public abstract class State
 {
-	public Node Parse(ILexer lexer);
+	public abstract State Parse(ILexer lexer, Tree tree);
+
 }

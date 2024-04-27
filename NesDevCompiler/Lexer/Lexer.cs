@@ -12,16 +12,48 @@ public class Lexer : ILexer
 		_stream = stream;
 	}
 
-	public Token Peek()
+	public Token Peek(bool ignoreWhitespace = true, int t = 0)
 	{
-		Token token = GetToken(_stream, false);
+		ICharacterStream stream = (ICharacterStream)_stream.Clone();
+		Token token = GetToken(stream);
+
+		if (ignoreWhitespace)
+		{
+			while (token.Value == " ")
+			{
+				token = GetToken(stream);
+			}
+		}
+		for (int i = 0; i < t; i++)
+		{
+			if (ignoreWhitespace)
+			{
+				if (token.Value != " ")
+				{
+					token = GetToken(stream);
+				}
+				while (token.Value == " ")
+				{
+					token = GetToken(stream);
+				}
+			}
+			else
+			{
+				token = GetToken(stream);
+			}
+		}
 
 		return token;
 	}
 
-	public Token Next()
+	public Token Next(bool ignoreWhitespace = true)
 	{
-		Token token = GetToken(_stream, true);
+		Token token = GetToken(_stream);
+
+		while (token.Value == " ")
+		{
+			token = GetToken(_stream);
+		}
 
 		return token;
 	}
@@ -31,7 +63,7 @@ public class Lexer : ILexer
 		return _stream.End();
 	}
 
-	public Token GetToken(ICharacterStream stream, bool consume)
+	public Token GetToken(ICharacterStream stream)
 	{
 		string token = "";
 		string prev = "";
@@ -45,7 +77,7 @@ public class Lexer : ILexer
 
 			TokenType type = TokenIdentifier.GetTokenType(token);
 
-			if (type != TokenType.Identifier)
+			if (type == TokenType.Punctuation)
 			{
 				stream.Read();
 				return new Token(type, token);
@@ -60,84 +92,5 @@ public class Lexer : ILexer
 			}
 			stream.Read();
 		}
-
-		throw new NotImplementedException();
-/*		if (stream.End())
-			return new Token(TokenType.End, "");
-		string token = "";
-		int i = 0;
-
-		if (TokenIdentifier.IsPunctuation(stream.Peek().ToString()))
-		{
-			char punc = consume ? stream.Read() : stream.Peek();
-			Token final = new Token(TokenType.Punctuation, punc.ToString());
-			return final;
-		}
-		if (TokenIdentifier.IsOperator(stream.Peek().ToString() + stream.Peek(1)))
-		{
-			string op = consume ? (stream.Read().ToString() + stream.Read())
-								: (stream.Peek().ToString() + stream.Peek(1));
-
-			Token final = new Token(TokenType.Keyword, op);
-			return final;
-		}
-		else if (TokenIdentifier.IsOperator(stream.Peek().ToString()))
-		{
-			string op = consume ? (stream.Read().ToString())
-								: (stream.Peek().ToString());
-
-			Token final = new Token(TokenType.Keyword, op);
-			return final;
-		}
-
-		while (!stream.End())
-		{
-			char c = consume ? stream.Read() : stream.Peek(i);
-			token += c;
-
-			char next;
-
-			try
-			{
-				next = stream.Peek(i + 1);
-			}
-			catch (Exception e)
-			{
-				return new Token(TokenType.End, "");
-			}
-
-			// Token ended: check if its an identifier or keyword
-			if (TokenIdentifier.IsPunctuation(next.ToString()) || TokenIdentifier.IsOperator(next.ToString()))
-			{
-				Debug.WriteLine(token);
-				if (TokenIdentifier.IsKeyword(token))
-				{
-					Token final = new Token(TokenType.Keyword, token);
-					return final;
-				}
-				if (TokenIdentifier.IsValue(token))
-				{
-					Token final = new Token(TokenType.Value, token);
-					return final;
-				}
-				return new Token(TokenType.Identifier, token);
-			}
-			i++;
-			if (i > 1000)
-			{
-				throw new Exception("loop looped too much");
-			}
-		}
-		if (TokenIdentifier.IsKeyword(token))
-		{
-			Token final = new Token(TokenType.Keyword, token);
-			return final;
-		}
-		if (TokenIdentifier.IsValue(token))
-		{
-			Token final = new Token(TokenType.Value, token);
-			return final;
-		}
-		return new Token(TokenType.Identifier, token);*/
 	}
 }

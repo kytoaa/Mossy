@@ -26,6 +26,8 @@ namespace NesDev
 
 		private void ButtonCompile_Click(object sender, RoutedEventArgs e)
 		{
+			//new NesDevCompiler.Parser.AbstractSyntaxTree.ExpressionParser().Parse(new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream("(1 + 3) - 2;")));
+
 			if (string.IsNullOrEmpty(_filePath))
 				return;
 			string path = Path.ChangeExtension(_filePath, ".s");
@@ -35,9 +37,21 @@ namespace NesDev
 			// TODO Compile here
 
 			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
-			for (int i = 0; i < 100; i++)
+			txtErrorMessage.Content = "";
+			try
+			{
+				NesDevCompiler.Parser.AbstractSyntaxTree.Node node = new NesDevCompiler.Parser.Parser().Parse(lexer);
+				Debug.WriteLine(node);
+				txtErrorMessage.Content = "Compiled!";
+			}
+			catch (Exception ex)
+			{
+				txtErrorMessage.Content = ex.Message;
+			}
+/*			while (!lexer.End())
 			{
 				NesDevCompiler.Lexer.Token next = lexer.Next();
+
 				text += next.Type;
 				text += " ";
 				text += next.Value;
@@ -47,15 +61,14 @@ namespace NesDev
 					break;
 			}
 
-			Debug.WriteLine(text);
-			File.WriteAllText(path, text);
+			File.WriteAllText(path, text);*/
 		}
 
 		private void ButtonFileOpen_Click(object sender, RoutedEventArgs e)
 		{
 			// Configure open file dialog box
 			var dialog = new Microsoft.Win32.OpenFileDialog();
-			dialog.FileName = "Document"; // Default file name
+			dialog.FileName = "program"; // Default file name
 			dialog.DefaultExt = ".nesdev"; // Default file extension
 			dialog.Filter = "NesDev documents (.nesdev)|*.nesdev"; // Filter files by extension
 
