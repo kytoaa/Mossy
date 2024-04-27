@@ -6,6 +6,12 @@ public class TwoOperandExpression : Expression
 	public Expression Right;
 	public string Operator;
 
+	public override List<Node> GetChildren()
+	{
+		List<Node> children = [Left, Right];
+		return children;
+	}
+
 
 	public TwoOperandExpression(Node parent, string type, Expression l, Expression r, string op) : base(parent, type)
 	{

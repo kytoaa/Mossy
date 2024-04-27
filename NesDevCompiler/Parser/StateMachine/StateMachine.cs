@@ -1,7 +1,5 @@
 ﻿using NesDevCompiler.Lexer;
 using NesDevCompiler.Parser.AbstractSyntaxTree;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace NesDevCompiler.Parser;
 
@@ -51,18 +49,20 @@ public class StateMachine
 			{
 				context.variables.Add(VarState(lexer, context));
 			}
-			if (next.Value == "if")
+			else if (next.Value == "if")
 			{
 				context.statements.Add(IfStatementState(lexer, context));
 			}
-			if (next.Value == "while")
+			else if (next.Value == "while")
 			{
 				context.statements.Add(WhileStatementState(lexer, context));
 			}
-			if (next.Type == TokenType.Identifier)
+			else if (next.Type == TokenType.Identifier)
 			{
 				context.statements.Add(StatementState(lexer, context, next));
 			}
+			else
+				throw new CompileError($"Syntax Error: {next.Value} is not a valid statement!");
 		}
 		Token closeCurly = lexer.Next();
 		if (closeCurly.Value != "}")
@@ -70,7 +70,7 @@ public class StateMachine
 		return context;
 	}
 
-	private Statement StatementState(ILexer lexer, Node parent, Token next)
+	private IStatement StatementState(ILexer lexer, Node parent, Token next)
 	{
 		Token funcOrAssign = lexer.Next();
 		if ((funcOrAssign.Value != "(") && (funcOrAssign.Value != "="))
@@ -91,23 +91,23 @@ public class StateMachine
 
 			Token endStatement = lexer.Next();
 			if (endStatement.Value != ";")
-				throw new CompileError($"Syntax Error: function declaration never ends, you forgot a semicolon!");
-			Statement statement = new FunctionCall(parent, next.Value) { Arguments = args };
+				throw new CompileError($"Syntax Error: function declaration {next.Value} never ends, you forgot a semicolon!");
+			IStatement statement = new FunctionCall(parent, next.Value, args);// { Arguments = args };
 			return statement;
 		}
 		else if (funcOrAssign.Value == "=")
 		{
-			Statement statement = new VariableAssignent(parent, next.Value, ParseExpression(lexer));
+			IStatement statement = new VariableAssignent(parent, next.Value, ParseExpression(lexer));
 			Token endStatement = lexer.Next();
 			if (endStatement.Value != ";")
-				throw new CompileError($"Syntax Error: function declaration never ends, you forgot a semicolon!");
+				throw new CompileError($"Syntax Error: variable declaration {next.Value} never ends, you forgot a semicolon!");
 			return statement;
 		}
 		else
 			throw new CompileError($"Syntax Error: not a valid statement, only assignments and function calls are allowed!");
 	}
 
-	private Statement IfStatementState(ILexer lexer, Context parent)
+	private IStatement IfStatementState(ILexer lexer, Context parent)
 	{
 		Token openBrackets = lexer.Next();
 		if (openBrackets.Value != "(")
@@ -127,6 +127,11 @@ public class StateMachine
 
 		ifStatement.Body = context.statements;
 
+		if (context.variables.Count > 0)
+			throw new CompileError("Syntax Error: local variables may not be declared within if statements!");
+		if (context.functions.Count > 0)
+			throw new CompileError("Syntax Error: functions may not be declared within if statements!");
+
 		if (lexer.Peek().Value != "else")
 			return ifStatement;
 
@@ -141,25 +146,31 @@ public class StateMachine
 
 		return ifStatement;
 	}
-	private Statement WhileStatementState(ILexer lexer, Context parent)
+	private IStatement WhileStatementState(ILexer lexer, Context parent)
 	{
 		Token openBrackets = lexer.Next();
 		if (openBrackets.Value != "(")
-			throw new CompileError($"Syntax Error: if statements must have a condition");
+			throw new CompileError($"Syntax Error: while statements must have a condition");
 		Expression condition = ParseExpression(lexer);
 		Token closeBrackets = lexer.Next();
 		if (closeBrackets.Value != ")")
-			throw new CompileError($"Syntax Error: if statement condition must be closed");
+			throw new CompileError($"Syntax Error: while statement condition must be closed");
 
 		WhileStatement whileStatement = new WhileStatement(parent, condition);
 
 		Token openCurly = lexer.Next();
 		if (openCurly.Value != "{")
-			throw new CompileError($"Syntax Error: if statement must have a body");
+			throw new CompileError($"Syntax Error: while statement must have a body");
 
 		Context context = FunctionContextState(lexer, whileStatement);
 
 		whileStatement.Body = context.statements;
+
+		if (context.variables.Count > 0)
+			throw new CompileError("Syntax Error: local variables may not be declared within while loops!");
+		if (context.functions.Count > 0)
+			throw new CompileError("Syntax Error: functions may not be declared within while loops!");
+
 		return whileStatement;
 	}
 
@@ -225,7 +236,7 @@ public class StateMachine
 		if (openBrackets.Value != "(")
 			throw new CompileError($"Syntax Error: function declaration must open with an optional argument list!");
 
-		FunctionDeclaration functionDeclaration = new FunctionDeclaration(context);
+		FunctionDeclaration functionDeclaration = new FunctionDeclaration(context, functionType.Value);
 
 		List<VariableDeclaration> arguments = new List<VariableDeclaration>();
 		while (lexer.Peek().Value != ")")
@@ -235,7 +246,7 @@ public class StateMachine
 		lexer.Next();
 		Token openCurly = lexer.Next();
 		if (openCurly.Value != "{")
-			throw new CompileError($"Syntax Error: function declaration must have a body!");
+			throw new CompileError($"Syntax Error: {openCurly} is not a valid function body!");
 
 		Context functionContext = FunctionContextState(lexer, functionDeclaration);
 
@@ -249,10 +260,35 @@ public class StateMachine
 
 	private Expression ParseExpression(ILexer lexer)
 	{
-		Expression expression = new ExpressionParser().Parse(lexer);
-		//expression.parent = tree.current;
+		Token next = lexer.Peek();
+		if (!((next.Type == TokenType.Identifier) || (next.Type == TokenType.Value) || (next.Value == "(") || (next.Type == TokenType.Operator)))
+			throw new CompileError($"Syntax Error: {next.Value} is not a valid expression!");
 
-		return expression;
+		if ((next.Type == TokenType.Identifier) && (lexer.Peek(true, 1).Value == "("))
+		{
+			lexer.Next();
+			lexer.Next();
+			List<Expression> args = new List<Expression>();
+			while (lexer.Peek().Value != ")")
+			{
+				if (lexer.Peek().Value == ";")
+					break;
+				args.Add(ParseExpression(lexer));
+			}
+			Token closeBrackets = lexer.Next();
+			if (closeBrackets.Value != ")")
+				throw new CompileError($"Syntax Error: argument list must be closed!");
+
+			Expression statement = new FunctionCall(null, next.Value, args);// { Arguments = args };
+			return statement;
+		}
+		else
+		{
+			Expression expression = new ExpressionParser().Parse(lexer);
+			return expression;
+		}
+		//expression.parent = parent;
+
 	}
 
 	private FunctionCall ParseFunction(ILexer lexer, string identifier)

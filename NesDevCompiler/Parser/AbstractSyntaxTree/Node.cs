@@ -7,6 +7,8 @@ public abstract class Node
 	
 	public bool IsRoot => parent == null;
 
+	public abstract IEnumerable<Node> GetChildren();
+
 	public Node(Node parent)
 	{
 		this.parent = parent;
