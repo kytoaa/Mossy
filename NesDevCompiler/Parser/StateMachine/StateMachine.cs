@@ -62,6 +62,16 @@ public class StateMachine
 			{
 				context.statements.Add(WhileStatementState(lexer, context));
 			}
+			else if (next.Value == "return")
+			{
+				ReturnStatement returnStatement = new ReturnStatement(context, ParseExpression(lexer));
+
+				Token semicolon = lexer.Next();
+				if (semicolon.Value != ";")
+					throw new CompileError("Syntax Error: return statement not closed, did you forget a semicolon!");
+
+				context.statements.Add(returnStatement);
+			}
 			else if (next.Type == TokenType.Identifier)
 			{
 				context.statements.Add(StatementState(lexer, context, next));
@@ -71,7 +81,7 @@ public class StateMachine
 		}
 		Token closeCurly = lexer.Next();
 		if (closeCurly.Value != "}")
-			throw new CompileError($"Syntax Error: function body not closed");
+			throw new CompileError($"Syntax Error: function body not closed!");
 		return context;
 	}
 
@@ -116,17 +126,17 @@ public class StateMachine
 	{
 		Token openBrackets = lexer.Next();
 		if (openBrackets.Value != "(")
-			throw new CompileError($"Syntax Error: if statements must have a condition");
+			throw new CompileError($"Syntax Error: if statements must have a condition!");
 		Expression condition = ParseExpression(lexer);
 		Token closeBrackets = lexer.Next();
 		if (closeBrackets.Value != ")")
-			throw new CompileError($"Syntax Error: if statement condition must be closed");
+			throw new CompileError($"Syntax Error: if statement condition must be closed!");
 
 		IfStatement ifStatement = new IfStatement(parent, condition);
 
 		Token openCurly = lexer.Next();
 		if (openCurly.Value != "{")
-			throw new CompileError($"Syntax Error: if statement must have a body");
+			throw new CompileError($"Syntax Error: if statement must have a body!");
 
 		Context context = FunctionContextState(lexer, ifStatement);
 
@@ -143,7 +153,7 @@ public class StateMachine
 		lexer.Next();
 		Token elseOpenCurly = lexer.Next();
 		if (elseOpenCurly.Value != "{")
-			throw new CompileError($"Syntax Error: if statement must have a body");
+			throw new CompileError($"Syntax Error: if statement must have a body!");
 
 		Context elseContext = FunctionContextState(lexer, ifStatement);
 
@@ -155,17 +165,17 @@ public class StateMachine
 	{
 		Token openBrackets = lexer.Next();
 		if (openBrackets.Value != "(")
-			throw new CompileError($"Syntax Error: while statements must have a condition");
+			throw new CompileError($"Syntax Error: while statements must have a condition!");
 		Expression condition = ParseExpression(lexer);
 		Token closeBrackets = lexer.Next();
 		if (closeBrackets.Value != ")")
-			throw new CompileError($"Syntax Error: while statement condition must be closed");
+			throw new CompileError($"Syntax Error: while statement condition must be closed!");
 
 		WhileStatement whileStatement = new WhileStatement(parent, condition);
 
 		Token openCurly = lexer.Next();
 		if (openCurly.Value != "{")
-			throw new CompileError($"Syntax Error: while statement must have a body");
+			throw new CompileError($"Syntax Error: while statement must have a body!");
 
 		Context context = FunctionContextState(lexer, whileStatement);
 

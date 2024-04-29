@@ -99,6 +99,11 @@ public class PythonCodeConverter : ICodeConverter
 				statementString += ConvertStatement(bodyStatement, depth + 1);
 			}
 		}
+		else if (statement is ReturnStatement)
+		{
+			ReturnStatement returnStatement = (ReturnStatement)statement;
+			statementString += $"return {ConvertExpression(returnStatement.ReturnValue)}";
+		}
 		statementString += "\n";
 		return statementString;
 	}

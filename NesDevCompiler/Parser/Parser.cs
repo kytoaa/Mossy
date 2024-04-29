@@ -95,6 +95,17 @@ public class Parser : IParser
 					throw new CompileError($"Type Error: {functionCall.Identifier} argument {i} is not of type {funcDecl.args[i]}!");
 			}
 		}
+		if (node is ReturnStatement)
+		{
+			ReturnStatement returnStatement = (ReturnStatement)node;
+			// TODO This next code is horrible, im warning you
+			Node parent = GetNodeContext(returnStatement).parent;
+			if (parent is FunctionDeclaration)
+			{
+				if (returnStatement.ReturnValue.Type != ((FunctionDeclaration)parent).Type)
+					throw new CompileError($"Type Error: returned type is different to return type of function!");
+			}
+		}
 	}
 
 	private Context GetNodeContext(Node node)
