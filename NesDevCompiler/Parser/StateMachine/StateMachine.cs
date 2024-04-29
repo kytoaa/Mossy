@@ -47,7 +47,12 @@ public class StateMachine
 
 			if (next.Value == "var")
 			{
-				context.variables.Add(VarState(lexer, context));
+				VariableDeclaration varDecl = VarState(lexer, context);
+				context.variables.Add(varDecl);
+				if (varDecl.Assignent != null)
+				{
+					context.statements.Add(varDecl.Assignent);
+				}
 			}
 			else if (next.Value == "if")
 			{
