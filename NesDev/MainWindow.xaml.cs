@@ -38,9 +38,11 @@ namespace NesDev
 
 			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
 			txtErrorMessage.Content = "";
+
+			NesDevCompiler.Parser.AbstractSyntaxTree.Node node = null;
 			try
 			{
-				NesDevCompiler.Parser.AbstractSyntaxTree.Node node = new NesDevCompiler.Parser.Parser().Parse(lexer);
+				node = new NesDevCompiler.Parser.Parser().Parse(lexer);
 				Debug.WriteLine(node);
 				txtErrorMessage.Content = "Compiled!";
 			}
@@ -48,20 +50,21 @@ namespace NesDev
 			{
 				txtErrorMessage.Content = ex.Message;
 			}
-/*			while (!lexer.End())
+			
+			if (node != null)
 			{
-				NesDevCompiler.Lexer.Token next = lexer.Next();
-
-				text += next.Type;
-				text += " ";
-				text += next.Value;
-				text += "\n";
-
-				if (lexer.End())
-					break;
+				NesDevCompiler.CodeConversion.ICodeConverter codeConverter = new NesDevCompiler.CodeConversion.PythonCodeConverter();
+				try
+				{
+					text = codeConverter.Convert(node);
+				}
+				catch (Exception ex)
+				{
+					txtErrorMessage.Content = ex.Message;
+				}
 			}
 
-			File.WriteAllText(path, text);*/
+			File.WriteAllText(path, text);
 		}
 
 		private void ButtonFileOpen_Click(object sender, RoutedEventArgs e)
