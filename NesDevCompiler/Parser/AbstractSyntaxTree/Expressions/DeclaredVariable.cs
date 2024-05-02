@@ -4,6 +4,8 @@ public class DeclaredVariable : Expression
 {
 	public string Identifier;
 	public int Offset;
+	public int Address;
+	public bool IsGlobal;
 
 	public override List<Node> GetChildren()
 	{

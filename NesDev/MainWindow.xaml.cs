@@ -26,8 +26,6 @@ namespace NesDev
 
 		private void ButtonCompile_Click(object sender, RoutedEventArgs e)
 		{
-			//new NesDevCompiler.Parser.AbstractSyntaxTree.ExpressionParser().Parse(new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream("(1 + 3) - 2;")));
-
 			if (string.IsNullOrEmpty(_filePath))
 				return;
 			string path = Path.ChangeExtension(_filePath, ".s");

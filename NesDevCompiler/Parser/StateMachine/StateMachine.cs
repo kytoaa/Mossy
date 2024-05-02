@@ -28,8 +28,8 @@ public class StateMachine
 			{
 				globalContext.functions.Add(FunctionState(lexer, globalContext));
 			}
-			//else
-				//throw new CompileError($"Syntax Error: {token.Value} is not a valid keyword! Only functions and declarations valid in this context!");
+			else
+				throw new CompileError($"Syntax Error: {token.Value} is not a valid keyword! Only functions and declarations valid in this context!");
 		}
 		return globalContext;
 
@@ -256,7 +256,10 @@ public class StateMachine
 		List<VariableDeclaration> arguments = new List<VariableDeclaration>();
 		while (lexer.Peek().Value != ")")
 		{
-			arguments.Add(VarState(lexer, functionDeclaration));
+			VariableDeclaration var = VarState(lexer, functionDeclaration);
+			if (var.Assignent != null)
+				throw new CompileError($"Syntax Error: function arguments cannot have default values!");
+			arguments.Add(var);
 		}
 		lexer.Next();
 		Token openCurly = lexer.Next();

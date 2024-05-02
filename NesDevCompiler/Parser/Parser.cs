@@ -24,11 +24,12 @@ public class Parser : IParser
 		return ast;
 	}
 
-	private record struct Variable(string identifier, string type);
+	private record struct Variable(string identifier, string type, int address, bool isGlobal);
 	private record struct Function(string identifier, string type, List<string> args);
 
 	private void CheckVariablesAndFunctions(Node node, List<Variable> variables = null, List<Function> functions = null)
 	{
+		bool isGlobal = (variables == null) && (functions == null);
 		if (variables == null)
 			variables = new List<Variable>();
 		if (functions == null)
@@ -36,9 +37,11 @@ public class Parser : IParser
 
 		if (node is Context)
 		{
+			int varIndex = 0;
 			foreach (VariableDeclaration variableDeclaration in ((Context)node).variables)
 			{
-				variables.Add(new Variable(variableDeclaration.Identifier, variableDeclaration.Type));
+				variables.Add(new Variable(variableDeclaration.Identifier, variableDeclaration.Type, varIndex, isGlobal));
+				varIndex += 1;
 			}
 			foreach (FunctionDeclaration functionDeclaration in ((Context)node).functions)
 			{
@@ -62,6 +65,8 @@ public class Parser : IParser
 				throw new CompileError($"Syntax Error: {((DeclaredVariable)node).Identifier} does not exist within this context!");
 
 			((DeclaredVariable)node).Type = varDecl.type;
+			((DeclaredVariable)node).Address = varDecl.address;
+			((DeclaredVariable)node).IsGlobal = varDecl.isGlobal;
 		}
 		if (node is VariableAssignent)
 		{

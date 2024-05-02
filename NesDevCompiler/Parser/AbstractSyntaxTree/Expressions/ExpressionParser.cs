@@ -61,7 +61,9 @@ public class ExpressionParser
 
 		if (node.value.Type == TokenType.Identifier)
 		{
-			expression = new DeclaredVariable(parent, "default", node.value.Value); // TODO add offset
+			expression = new DeclaredVariable(parent, "default", node.value.Value);
+			((DeclaredVariable)expression).Offset = int.Parse(node.offset);
+			// TODO add offset
 		}
 		else if (node.value.Type == TokenType.Value)
 		{
