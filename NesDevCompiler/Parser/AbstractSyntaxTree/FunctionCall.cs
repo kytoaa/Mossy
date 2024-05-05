@@ -4,6 +4,7 @@ public class FunctionCall : Expression, IStatement
 {
 	public List<Expression> Arguments = new List<Expression>();
 	public string Identifier;
+	public int Size;
 
 	public override List<Node> GetChildren()
 	{

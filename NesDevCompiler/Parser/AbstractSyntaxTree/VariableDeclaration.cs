@@ -8,6 +8,9 @@ public class VariableDeclaration : Node
 	public int Size;
 	public bool IsArray;
 
+	public int Address;
+	public bool IsGlobal;
+
 	public VariableAssignent? Assignent;
 
 	public override List<Node> GetChildren()

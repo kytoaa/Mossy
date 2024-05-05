@@ -8,12 +8,56 @@ public class Assembly6502CodeConverter: ICodeConverter
 
 	public string Convert(Node root)
 	{
-		return ConvertContext((Context)root, 0);
+		string asm = SetupBase();
+		asm += ConvertContext((Context)root);
+		return asm;
 	}
 
-	private string ConvertContext(Context context, int depth)
+	private string SetupBase()
 	{
-		throw new NotImplementedException();
+		string utils = "";
+
+		utils += @"sys_create_context:
+  clc
+  ldx $00
+  txa
+  adc $00, x ; 5, 0, 0, 0, 0, 3, 1, 2, z
+  sta $00
+  tay               ; stores new value of $00
+  txa               ; now a is initial value of $00
+  sta $01, y        ; stores previous value of context pointer to new context
+  tya               ; now a is new value of $00
+  tax
+  lda $02
+  sta $00, x
+  rts
+
+sys_clear_context:
+  ldx $00
+  ldy $01, x
+  sty $00
+  rts";
+
+		return utils;
+	}
+
+	private string ConvertContext(Context context)
+	{
+		string contextString = "";
+
+		foreach (VariableDeclaration variable in context.variables)
+		{
+			contextString += ConvertVariable(variable);
+		}
+		foreach (FunctionDeclaration functionDeclaration in context.functions)
+		{
+			contextString += "\n";
+			contextString += $"nesdev_{functionDeclaration.Identifier}:" + "\n";
+			contextString += ConvertContext(functionDeclaration.Body);
+			contextString += "rts" + "\n";
+		}
+
+		return contextString;
 		/*
 		string contextString = "";
 		foreach (VariableDeclaration variableDeclaration in context.variables)
@@ -54,6 +98,39 @@ public class Assembly6502CodeConverter: ICodeConverter
 
 	private string ConvertStatement(IStatement statement, int depth)
 	{
+		string statementString = "";
+
+		if (statement is FunctionCall)
+		{
+			statementString += ConvertExpression((FunctionCall)statement);
+			statementString += "pla" + "\n";
+			return statementString;
+		}
+		else if (statement is VariableAssignent)
+		{
+			VariableAssignent variableAssignent = (VariableAssignent)statement;
+
+			statementString += ConvertExpression(variableAssignent.Expression);
+
+			statementString += "pla" + "\n";
+			statementString += "ldx $00" + "\n";
+			statementString += $"sta {ConvertToHex(variableAssignent.Address + 3)}, x" + "\n";
+			return statementString;
+		}
+		else if (statement is IfStatement)
+		{
+			IfStatement ifStatement = (IfStatement)statement;
+		}
+		else if (statement is WhileStatement)
+		{
+			WhileStatement whileStatement = (WhileStatement)statement;
+		}
+		else if (statement is ReturnStatement)
+		{
+			ReturnStatement returnStatement = (ReturnStatement)statement;
+		}
+
+
 		throw new NotImplementedException();
 		/*
 		string statementString = GetIndent(depth);
@@ -112,25 +189,24 @@ public class Assembly6502CodeConverter: ICodeConverter
 
 		if (var.Assignent != null)
 		{
-			//string assignment = var.Assignent.
+			string assignment = ConvertExpression(var.Assignent.Expression);
+			result += assignment;
+			result += "pla" + "\n";
 		}
 		else
 		{
-			
+			result += "lda #$00" + "\n";
 		}
-
-		throw new NotImplementedException();
-		/*
-		string declaration = var.Identifier;
-		declaration += $": {var.Type}";
-
-		if (var.Assignent != null)
+		if (var.IsGlobal)
 		{
-			declaration += $" = {ConvertExpression(var.Assignent.Expression)}";
+			result += $"sta ${ConvertToHex(var.Address + 4)}" + "\n";
+		}
+		else
+		{
+			result += $"sta ${ConvertToHex(var.Address + 3)}" + "\n";
 		}
 
-		return declaration;
-		*/
+		return result;
 	}
 
 	private string ConvertExpression(Expression expression)
@@ -141,7 +217,7 @@ public class Assembly6502CodeConverter: ICodeConverter
 			string value = "";
 			if (declaredVariable.IsGlobal)
 			{
-				value += $"lda ${ConvertToHex(declaredVariable.Address)}";
+				value += $"lda ${ConvertToHex(declaredVariable.Address + 4)}";
 				value += "\n";
 				value += "pha";
 				value += "\n";
@@ -150,7 +226,7 @@ public class Assembly6502CodeConverter: ICodeConverter
 			{
 				value += "ldx $00";
 				value += "\n";
-				value += $"lda ${ConvertToHex(declaredVariable.Address)}, x";
+				value += $"lda ${ConvertToHex(declaredVariable.Address + 3)}, x";
 				value += "\n";
 				value += "pha";
 				value += "\n";
@@ -211,66 +287,29 @@ public class Assembly6502CodeConverter: ICodeConverter
 		{
 			FunctionCall functionCall = (FunctionCall)expression;
 
+			string value = "";
+
 			// TODO function call code
 			// set arguments
-			// create context
-			// jump to context
-			// close context
-		}
-
-
-		throw new NotImplementedException();
-		/*
-		string expressionString = "";
-
-		if (expression is DeclaredVariable)
-		{
-			expressionString += ((DeclaredVariable)expression).Identifier;
-		}
-		if (expression is ConstantValue)
-		{
-			string value = ((ConstantValue)expression).Value;
-			if (value == "true")
-				value = "True";
-			if (value == "false")
-				value = "False";
-			expressionString += value;
-		}
-		if (expression is SingleOperandExpression)
-		{
-			string op = ((SingleOperandExpression)expression).Operator;
-			if (op == "!")
-				op = "not ";
-			expressionString += "(";
-			expressionString += op;
-			expressionString += ConvertExpression(((SingleOperandExpression)expression).Value);
-			expressionString += ")";
-		}
-		if (expression is TwoOperandExpression)
-		{
-			TwoOperandExpression expr = (TwoOperandExpression)expression;
-			expressionString += "(";
-			expressionString += ConvertExpression(expr.Left);
-			expressionString += expr.Operator;
-			expressionString += ConvertExpression(expr.Right);
-			expressionString += ")";
-		}
-		if (expression is FunctionCall)
-		{
-			FunctionCall functionCall = (FunctionCall)expression;
-			expressionString += functionCall.Identifier;
-			expressionString += "(";
 			for (int i = 0; i < functionCall.Arguments.Count; i++)
 			{
-				if (i > 0)
-					expressionString += ",";
-				expressionString += ConvertExpression(functionCall.Arguments[i]);
+				value += ConvertExpression(functionCall.Arguments[i]);
+				value += "lda $00" + "\n";
+				value += "adc $00, x" + "\n";
+				value += "pla" + "\n";
+				value += $"sta ${ConvertToHex(i + 3)}, x" + "\n";
 			}
-			expressionString += ")";
+			// jump to context
+			value += $"lda #${ConvertToHex(functionCall.Size + 3)}" + "\n";
+			value += "sta $02" + "\n";
+			value += "jsr sys_create_context" + "\n";
+			value += $"jsr nesdev_{functionCall.Identifier}" + "\n";
+			// close context
+			value += $"jsr sys_close_context" + "\n";
+			value += "pha" + "\n";
 		}
 
-		return expressionString;
-		*/
+		throw new NotImplementedException();
 	}
 
 	private string GetASMOperation(string operation)

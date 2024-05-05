@@ -25,7 +25,7 @@ public class Parser : IParser
 	}
 
 	private record struct Variable(string identifier, string type, int address, bool isGlobal);
-	private record struct Function(string identifier, string type, List<string> args);
+	private record struct Function(string identifier, string type, List<string> args, int size);
 
 	private void CheckVariablesAndFunctions(Node node, List<Variable> variables = null, List<Function> functions = null)
 	{
@@ -41,11 +41,18 @@ public class Parser : IParser
 			foreach (VariableDeclaration variableDeclaration in ((Context)node).variables)
 			{
 				variables.Add(new Variable(variableDeclaration.Identifier, variableDeclaration.Type, varIndex, isGlobal));
+				variableDeclaration.Address = varIndex;
+				variableDeclaration.IsGlobal = isGlobal;
+				if (variableDeclaration.Assignent != null)
+				{
+					variableDeclaration.Assignent.Address = varIndex;
+					variableDeclaration.Assignent.IsGlobal = isGlobal;
+				}
 				varIndex += 1;
 			}
 			foreach (FunctionDeclaration functionDeclaration in ((Context)node).functions)
 			{
-				functions.Add(new Function(functionDeclaration.Identifier, functionDeclaration.Type, functionDeclaration.Arguments.Select(f => f.Type).ToList()));
+				functions.Add(new Function(functionDeclaration.Identifier, functionDeclaration.Type, functionDeclaration.Arguments.Select(f => f.Type).ToList(), functionDeclaration.Size));
 			}
 		}
 
@@ -92,6 +99,7 @@ public class Parser : IParser
 			Function funcDecl = functions.Find(v => v.identifier == ((FunctionCall)node).Identifier);
 			if (funcDecl == default)
 				throw new CompileError($"Syntax Error: {((FunctionCall)node).Identifier} does not exist within this context!");
+			functionCall.Size = funcDecl.size;
 			if (funcDecl.args.Count != functionCall.Arguments.Count)
 				throw new CompileError($"Syntax Error: argument count of function {functionCall.Identifier} does not match!");
 			for (int i = 0; i < functionCall.Arguments.Count; i++)

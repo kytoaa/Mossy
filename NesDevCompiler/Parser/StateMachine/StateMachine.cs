@@ -268,6 +268,9 @@ public class StateMachine
 
 		Context functionContext = FunctionContextState(lexer, functionDeclaration);
 
+
+		functionContext.variables = arguments.Union(functionContext.variables).ToList();
+
 		functionDeclaration.Arguments = arguments;
 		functionDeclaration.Body = functionContext;
 		functionDeclaration.Identifier = functionIdentifier.Value;
