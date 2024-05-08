@@ -6,6 +6,8 @@ public class Assembly6502CodeConverter: ICodeConverter
 {
 	private readonly string[] HexadecimalNumbers = new string[16] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
 
+	private int labelCount = 0;// { get { labelCount += 1; return labelCount; } set { labelCount = value; } }
+
 	public string Convert(Node root)
 	{
 		string asm = SetupBase();
@@ -38,7 +40,7 @@ sys_clear_context:
   sty $00
   rts";
 
-		return utils;
+		return utils + "\n";
 	}
 
 	private string ConvertContext(Context context)
@@ -55,6 +57,11 @@ sys_clear_context:
 			contextString += $"nesdev_{functionDeclaration.Identifier}:" + "\n";
 			contextString += ConvertContext(functionDeclaration.Body);
 			contextString += "rts" + "\n";
+		}
+		foreach (IStatement statement in context.statements)
+		{
+			contextString += "\n";
+			contextString += ConvertStatement(statement);
 		}
 
 		return contextString;
@@ -96,7 +103,7 @@ sys_clear_context:
 		*/
 	}
 
-	private string ConvertStatement(IStatement statement, int depth)
+	private string ConvertStatement(IStatement statement)
 	{
 		string statementString = "";
 
@@ -104,7 +111,7 @@ sys_clear_context:
 		{
 			statementString += ConvertExpression((FunctionCall)statement);
 			statementString += "pla" + "\n";
-			return statementString;
+			return statementString + "\n";
 		}
 		else if (statement is VariableAssignent)
 		{
@@ -115,77 +122,76 @@ sys_clear_context:
 			statementString += "pla" + "\n";
 			statementString += "ldx $00" + "\n";
 			statementString += $"sta {ConvertToHex(variableAssignent.Address + 3)}, x" + "\n";
-			return statementString;
+			return statementString + "\n";
 		}
 		else if (statement is IfStatement)
 		{
 			IfStatement ifStatement = (IfStatement)statement;
+			statementString += ConvertExpression(ifStatement.Condition);
+			int label = labelCount;
+			labelCount += 1;
+			statementString += @$"pla
+ldx $00
+stx $03
+cmp $03
+bne if_statement_{label}" + "\n";
+			foreach (IStatement bodyStatement in ifStatement.Body)
+			{
+				statementString += ConvertStatement(bodyStatement);
+			}
+			if (ifStatement.ElseBody != null)
+				statementString += $"jmp if_statement_else_{label}" + "\n";
+			statementString += $"if_statement_{label}:" + "\n";
+			if (ifStatement.ElseBody != null)
+			{
+				foreach (IStatement elseBodyStatement in ifStatement.ElseBody)
+				{
+					statementString += ConvertStatement(elseBodyStatement);
+				}
+			}
+			statementString += $"if_statement_else_{label}:" + "\n";
+			return statementString + "\n";
 		}
 		else if (statement is WhileStatement)
 		{
 			WhileStatement whileStatement = (WhileStatement)statement;
+			int label = labelCount;
+			labelCount += 1;
+			statementString += $"while_statement_{label}:" + "\n";
+			statementString += ConvertExpression(whileStatement.Condition);
+			statementString += @$"pla
+ldx $00
+stx $03
+cmp $03
+bne while_statement_end_{label}" + "\n";
+			foreach (IStatement whileStatementBody in  whileStatement.Body)
+			{
+				statementString += ConvertStatement(whileStatementBody);
+			}
+			statementString += $"jmp while_statement_{label}" + "\n";
+			statementString += $"while_statement_end_{label}:" + "\n";
+			return statementString;
 		}
 		else if (statement is ReturnStatement)
 		{
 			ReturnStatement returnStatement = (ReturnStatement)statement;
+			// TODO return
+			return "; return statement" + "\n";
+		}
+		else if (statement is BreakStatement)
+		{
+			BreakStatement breakStatement = (BreakStatement)statement;
+			// TODO break
 		}
 
 
 		throw new NotImplementedException();
-		/*
-		string statementString = GetIndent(depth);
-		if (statement is FunctionCall)
-		{
-			statementString += ConvertExpression((FunctionCall)statement);
-		}
-		else if (statement is VariableAssignent)
-		{
-			VariableAssignent variableAssignent = (VariableAssignent)statement;
-			statementString += $"{variableAssignent.Identifier} = {ConvertExpression(variableAssignent.Expression)}";
-		}
-		else if (statement is IfStatement)
-		{
-			IfStatement ifStatement = (IfStatement)statement;
-			statementString += $"if {ConvertExpression(ifStatement.Condition)}:";
-			statementString += "\n";
-			foreach (IStatement bodyStatement in ifStatement.Body)
-			{
-				statementString += ConvertStatement(bodyStatement, depth + 1);
-			}
-			if (ifStatement.ElseBody != null)
-			{
-				statementString += GetIndent(depth);
-				statementString += "else:";
-				statementString += "\n";
-				foreach (IStatement elseBodyStatement in ifStatement.ElseBody)
-				{
-					statementString += ConvertStatement(elseBodyStatement, depth + 1);
-				}
-			}
-		}
-		else if (statement is WhileStatement)
-		{
-			WhileStatement whileStatement = (WhileStatement)statement;
-			statementString += $"while {ConvertExpression(whileStatement.Condition)}:";
-			statementString += "\n";
-			foreach (IStatement bodyStatement in whileStatement.Body)
-			{
-				statementString += ConvertStatement(bodyStatement, depth + 1);
-			}
-		}
-		else if (statement is ReturnStatement)
-		{
-			ReturnStatement returnStatement = (ReturnStatement)statement;
-			statementString += $"return {ConvertExpression(returnStatement.ReturnValue)}";
-		}
-		statementString += "\n";
-		return statementString;
-		*/
 	}
 
 	private string ConvertVariable(VariableDeclaration var)
 	{
 		string result = "";
+		result += $"; converting variable {var.Identifier}" + "\n";
 
 		if (var.Assignent != null)
 		{
@@ -203,7 +209,8 @@ sys_clear_context:
 		}
 		else
 		{
-			result += $"sta ${ConvertToHex(var.Address + 3)}" + "\n";
+			result += "ldx $00" + "\n";
+			result += $"sta ${ConvertToHex(var.Address + 3)}, x" + "\n";
 		}
 
 		return result;
@@ -265,7 +272,7 @@ sys_clear_context:
 			value += "pla" + "\n";
 			value += "sta $03" + "\n";
 			value += "pla" + "\n";
-			value += GetASMOperation(twoOperandExpression.Operator) + " $03" + "\n";
+			value += GetASMOperation(twoOperandExpression.Operator) + "\n";
 			value += "pha" + "\n";
 			return value;
 		}
@@ -307,6 +314,8 @@ sys_clear_context:
 			// close context
 			value += $"jsr sys_close_context" + "\n";
 			value += "pha" + "\n";
+			// TODO might be more to do here, also might not work
+			return value;
 		}
 
 		throw new NotImplementedException();
@@ -314,6 +323,38 @@ sys_clear_context:
 
 	private string GetASMOperation(string operation)
 	{
+		switch (operation)
+		{
+			case "+":
+				return AssemblyOperations.Add();
+			case "-":
+				return AssemblyOperations.Subtract();
+			case ">":
+				return AssemblyOperations.GreaterThan();
+			case "<":
+				return AssemblyOperations.LessThan();
+			case "==":
+				return AssemblyOperations.EqualTo();
+			case "!=":
+				return AssemblyOperations.NotEqual();
+			case "&&":
+				return AssemblyOperations.And();
+			case "||":
+				return AssemblyOperations.Or();
+			case "&":
+				return AssemblyOperations.BitwiseAnd();
+			case "|":
+				return AssemblyOperations.BitwiseOr();
+			case "^":
+				return AssemblyOperations.BitwiseXOr();
+			case "<<":
+				return AssemblyOperations.BitshiftLeft();
+			case ">>":
+				return AssemblyOperations.BitshiftRight();
+			default:
+				throw new NotImplementedException();
+		}
+
 		throw new NotImplementedException();
 	}
 

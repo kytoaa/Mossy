@@ -119,6 +119,11 @@ public class Parser : IParser
 					throw new CompileError($"Type Error: returned type is different to return type of function!");
 			}
 		}
+		if (node is BreakStatement)
+		{
+			BreakStatement breakStatement = (BreakStatement)node;
+			// TODO make sure break statement is within while loop
+		}
 	}
 
 	private Context GetNodeContext(Node node)

@@ -51,10 +51,10 @@ namespace NesDev
 			
 			if (node != null)
 			{
-				NesDevCompiler.CodeConversion.ICodeConverter codeConverter = new NesDevCompiler.CodeConversion.PythonCodeConverter();
+				NesDevCompiler.CodeConversion.ICodeConverter codeConverter = new NesDevCompiler.CodeConversion.Assembly6502CodeConverter();
+				text = codeConverter.Convert(node);
 				try
 				{
-					text = codeConverter.Convert(node);
 				}
 				catch (Exception ex)
 				{

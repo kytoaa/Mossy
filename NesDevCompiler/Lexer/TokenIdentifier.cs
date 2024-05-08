@@ -6,7 +6,7 @@ public static class TokenIdentifier
 {
 	public static readonly string[] Punctuation = { "{", "}", "(", ")", "[", "]", ";", ",", " "};
 	public static readonly string[] Operators = { "+", "-", "&", "|", "^", "<<", ">>", "==", "!=", "<", ">", "!", "&&", "||", "=" };
-	public static readonly string[] Keywords = { "func", "var", "const", "return", "if", "else", "int", "bool", "while" };
+	public static readonly string[] Keywords = { "func", "var", "const", "return", "break", "if", "else", "int", "bool", "while" };
 
 	public static bool IsPunctuation(string c) => Punctuation.Contains(c);
 	public static bool IsOperator(string c) => Operators.Contains(c);
