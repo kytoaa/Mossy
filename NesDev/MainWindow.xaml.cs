@@ -19,6 +19,8 @@ namespace NesDev
 	{
 		private string _filePath = "";
 
+		private NesDevCompiler.CodeConversion.ICodeConverter _converter = new NesDevCompiler.CodeConversion.Assembly6502CodeConverter();;
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -51,10 +53,9 @@ namespace NesDev
 			
 			if (node != null)
 			{
-				NesDevCompiler.CodeConversion.ICodeConverter codeConverter = new NesDevCompiler.CodeConversion.Assembly6502CodeConverter();
-				text = codeConverter.Convert(node);
 				try
 				{
+					text = _converter.Convert(node);
 				}
 				catch (Exception ex)
 				{
@@ -122,5 +123,21 @@ namespace NesDev
 				txtFileName.Content = filename;
 			}
 		}
-	}
+
+		private void drpdwnCompileTo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (drpdwnCompileTo.SelectedItem != null)
+			{
+				switch (drpdwnCompileTo.SelectedIndex)
+				{
+					case 0:
+						_converter = new NesDevCompiler.CodeConversion.Assembly6502CodeConverter();
+						break;
+					case 1:
+						_converter = new NesDevCompiler.CodeConversion.PythonCodeConverter();
+						break;
+				}
+			}
+		}
+    }
 }

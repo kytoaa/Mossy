@@ -19,6 +19,10 @@
             <Button x:Name="btnFileOpen" Margin="0,0,0,0" Click="ButtonFileOpen_Click">Open</Button>
             <Button x:Name="btnSave" Click="ButtonSave_Click">Save</Button>
             <Button x:Name="btnCompile" Click="ButtonCompile_Click">Compile</Button>
+            <ComboBox x:Name="drpdwnCompileTo" Width="90" SelectionChanged="drpdwnCompileTo_SelectionChanged" SelectedIndex="0">
+                <ComboBoxItem Content="6502 Assembly"/>
+                <ComboBoxItem Content="Python"/>
+            </ComboBox>
         </TabPanel>
 
         <Label Grid.Row="1" x:Name="txtFileName">Untitled</Label>
