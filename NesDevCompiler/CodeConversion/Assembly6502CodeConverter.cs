@@ -120,18 +120,29 @@ sys_clear_context:
 			statementString += ConvertExpression(variableAssignent.Expression);
 
 			statementString += "pla" + "\n";
-			statementString += "ldx $00" + "\n";
-			statementString += $"sta {ConvertToHex(variableAssignent.Address + 3)}, x" + "\n";
+			if (variableAssignent.IsGlobal)
+			{
+				statementString += $"; global var {variableAssignent.Identifier}" + "\n";
+				statementString += $"sta ${ConvertToHex(variableAssignent.Address + 4)}" + "\n";
+			}
+			else
+			{
+				statementString += $"; local var {variableAssignent.Identifier}" + "\n";
+				statementString += "ldx $00" + "\n";
+				statementString += $"sta {ConvertToHex(variableAssignent.Address + 3)}, x" + "\n";
+			}
+
 			return statementString + "\n";
 		}
 		else if (statement is IfStatement)
 		{
+			statementString += "; converting if statement" + "\n";
 			IfStatement ifStatement = (IfStatement)statement;
 			statementString += ConvertExpression(ifStatement.Condition);
 			int label = labelCount;
 			labelCount += 1;
 			statementString += @$"pla
-ldx $00
+ldx #$01
 stx $03
 cmp $03
 bne if_statement_{label}" + "\n";
@@ -154,13 +165,14 @@ bne if_statement_{label}" + "\n";
 		}
 		else if (statement is WhileStatement)
 		{
+			statementString += "; converting while statement" + "\n";
 			WhileStatement whileStatement = (WhileStatement)statement;
 			int label = labelCount;
 			labelCount += 1;
 			statementString += $"while_statement_{label}:" + "\n";
 			statementString += ConvertExpression(whileStatement.Condition);
 			statementString += @$"pla
-ldx $00
+ldx #$01
 stx $03
 cmp $03
 bne while_statement_end_{label}" + "\n";
@@ -312,7 +324,7 @@ bne while_statement_end_{label}" + "\n";
 			value += "jsr sys_create_context" + "\n";
 			value += $"jsr nesdev_{functionCall.Identifier}" + "\n";
 			// close context
-			value += $"jsr sys_close_context" + "\n";
+			value += $"jsr sys_clear_context" + "\n";
 			value += "pha" + "\n";
 			// TODO might be more to do here, also might not work
 			return value;

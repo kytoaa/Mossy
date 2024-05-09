@@ -21,10 +21,10 @@ sbc $03";
 	{
 		string greaterThan = @"cmp $03
 bcs :+
-lda $01
+lda #$00
 jmp :++
 :
-lda $00
+lda #$01
 :";
 		return greaterThan + "\n";
 	}
@@ -33,10 +33,10 @@ lda $00
 	{
 		string lessThan = @"cmp $03
 bcc :+
-lda $01
+lda #$00
 jmp :++
 :
-lda $00
+lda #$01
 :";
 		return lessThan + "\n";
 	}
@@ -45,10 +45,10 @@ lda $00
 	{
 		string equalTo = @"cmp $03
 beq :+
-lda $01
+lda #$00
 jmp :++
 :
-lda $00
+lda #$01
 :";
 		return equalTo + "\n";
 	}
@@ -57,17 +57,17 @@ lda $00
 	{
 		string notEqual = @"cmp $03
 bne :+
-lda $01
+lda #$00
 jmp :++
 :
-lda $00
+lda #$01
 :";
 		return notEqual + "\n";
 	}
 
 	public static string Not()
 	{
-		string not = @"ldx $ff
+		string not = @"ldx #$ff
 stx $03
 eor $03";
 		return not + "\n";

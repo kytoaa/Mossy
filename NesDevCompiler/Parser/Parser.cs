@@ -82,6 +82,9 @@ public class Parser : IParser
 			if (varDecl == default)
 				throw new CompileError($"Syntax Error: {((VariableAssignent)node).Identifier} does not exist within this context!");
 
+			variableAssignent.IsGlobal = varDecl.isGlobal;
+			variableAssignent.Address = varDecl.address;
+
 			if (variableAssignent.Expression is FunctionCall)
 			{
 				Function funcCall = functions.Find(f => f.identifier == ((FunctionCall)variableAssignent.Expression).Identifier);
