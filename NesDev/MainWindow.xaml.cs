@@ -34,8 +34,6 @@ namespace NesDev
 
 			string text = "";
 
-			// TODO Compile here
-
 			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
 			txtErrorMessage.Content = "";
 

@@ -254,7 +254,7 @@ bne while_statement_end_{label}" + "\n";
 		else if (statement is ReturnStatement)
 		{
 			ReturnStatement returnStatement = (ReturnStatement)statement;
-			// TODO return
+
 			statementString += "; return statement" + "\n";
 			statementString += ConvertExpression(returnStatement.ReturnValue) + "\n";
 			statementString += "pla" + "\n";
@@ -264,7 +264,7 @@ bne while_statement_end_{label}" + "\n";
 		else if (statement is BreakStatement)
 		{
 			BreakStatement breakStatement = (BreakStatement)statement;
-			// TODO break
+			// TODO break (later release)
 		}
 
 
@@ -379,7 +379,6 @@ bne while_statement_end_{label}" + "\n";
 
 			string value = "";
 
-			// TODO function call code
 			// set arguments
 			for (int i = 0; i < functionCall.Arguments.Count; i++)
 			{
@@ -399,7 +398,6 @@ bne while_statement_end_{label}" + "\n";
 			// close context
 			value += $"jsr sys_clear_context" + "\n";
 			value += "pha" + "\n";
-			// TODO might be more to do here, also might not work
 			return value;
 		}
 

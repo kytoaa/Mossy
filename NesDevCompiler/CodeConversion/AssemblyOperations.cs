@@ -11,7 +11,6 @@ adc $03";
 
 	public static string Subtract()
 	{
-		// TODO replace with correct flag
 		string subtract = @"sec
 sbc $03";
 		return subtract + "\n";

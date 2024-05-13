@@ -119,7 +119,7 @@ public class Parser : IParser
 		if (node is ReturnStatement)
 		{
 			ReturnStatement returnStatement = (ReturnStatement)node;
-			// TODO This next code is horrible, im warning you
+			// This next code is horrible, im warning you
 			Node parent = GetNodeContext(returnStatement).parent;
 			if (parent is FunctionDeclaration)
 			{
@@ -130,7 +130,7 @@ public class Parser : IParser
 		if (node is BreakStatement)
 		{
 			BreakStatement breakStatement = (BreakStatement)node;
-			// TODO make sure break statement is within while loop
+			// TODO make sure break statement is within while loop (later release)
 		}
 	}
 
