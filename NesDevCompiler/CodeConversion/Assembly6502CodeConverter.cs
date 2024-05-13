@@ -159,6 +159,7 @@ sta $01";
 			contextString += "\n";
 			contextString += $"nesdev_{functionDeclaration.Identifier}:" + "\n";
 			contextString += ConvertContext(functionDeclaration.Body);
+			contextString += "lda #$00" + "\n";
 			contextString += "rts" + "\n";
 		}
 		foreach (IStatement statement in context.statements)
