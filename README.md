@@ -30,7 +30,7 @@ Comments use `//` and last until the end of the line.
 
 `if` declares an if statement, they must have a boolean expression `if (myexpression) { // Code here}`.
 
-`if` statements can be followed by `else` which may not have a condition `else { // Else code }`.
+`else` declares an else statement, they must directly follow an if statement and may not have a condition `else { // Else code }`.
 
 `while` declares a while loop. They must have a boolean expression and will loop until the boolean expression evaluates to false `while (myexpression) { // Loop this code }`
 
@@ -59,6 +59,40 @@ func int MyFunction() {
     var int myLocalInt = 1;
     if (myCondition) {
         // code
-        myLocalInt -= 1;
+        myLocalInt = myLocalInt - 1;
     }
 }
+```
+
+<b>Optional Return Statements</b> - Return statements are optional in NesDev, however if a function reaches its end without returning a value it will return `$00`, so `0` or `false`.
+
+<b>No For Loops</b> - For loops don't exist, this is because while loops are all you need, and in reality isn't a for loop just syntactic sugar for a while loop.
+This in c#
+```
+for (int i = 0; i < someNumber; i++) {
+    // code goes here
+}
+```
+Becomes this in NesDev
+```
+var int i = 0;
+while (i < someNumber) {
+    i = i + 1;
+    // code goes here
+}
+```
+
+<b>No Assignment Operators</b> - NesDev doesn't have assignment operators like `+=` or `-=`, this is because theyre unnecessary and are just syntactic sugar.
+
+<b>No Multiplication</b> - NesDev doesn't have multiplication or division, this is because the NES doesn't have multiplication or division, and it would either result in large amounts of bloat, or just compile to a function call. Therefore we let <b>you</b>, the programmer implement it yourself.
+Here is a basic multiplication function you could use
+```
+func int Multiply(int x; int y;) {
+	var int multResult = 0;
+	while (y > 0) {
+		multResult = (multResult + x);
+		y = (y - 1);
+	}
+	return multResult;
+}
+```
