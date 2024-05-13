@@ -42,30 +42,23 @@ The NesDev language has a few quirks that may seem strange, we will try to docum
 
 <b>Function Expression Evaluation</b> - Functions cannot be used in expressions, for example, this code is valid `myVar = MyFunc();` however this code will throw a compile error `myVar = (MyFunc() + 1)`. This decision was made to simplify the parsing of mathematical expressions, and may potentially be fixed in the future.
 
-<b>Variable Scoping</b> - Variables within functions are all the same scope, for example, in c# or most other languages this code would throw an error:
+<b>Variable Scoping</b> - Variables cannot be declared within if statements or while loops, they must be declared within the root context. The reason for this is it would be far more difficult to create a system to handle creating a new kind of context every time an if statement or while loop is entered, and the other solution is allowing declarations within the statements that then persist for the rest of the context, resulting in hard to trace bugs from out of scope data, so we decided that all variables within a function have to be local to the whole function, and if you try to declare a variable local to an if or while statement the compiler will not let you.
+Example - to do this in c#
 ```
-private void MyFunc()
-{
-    if (myExpression)
-    {
-        int myVar = 3;
+int MyFunction() {
+    if (myCondition) {
+        int myLocalInt = 1;
+        // code
+        myLocalInt -= 1;
     }
-    myVar -= 1;
 }
 ```
-However, in NesDev, this code is valid:
+You have to do this in NesDev
 ```
-func int MyFunc() {
-    if (myExpression) {
-        var int myVar = 3;
+func int MyFunction() {
+    var int myLocalInt = 1;
+    if (myCondition) {
+        // code
+        myLocalInt -= 1;
     }
-    myVar = myVar - 1;
 }
-```
-This may seem incredibly strange at first, however it was done because it greatly simplifies how contexts are handled internally. When a function is called, it compiles to something like this:
-```
-jsr sys_create_context
-jsr nesdev_MyFunc
-jsr sys_clear_context
-```
-What this does is very simple. `sys_create_context` is an internal subroutine that sets up the next context in the context stack, so it sets the context's initial values, and increments the context stack pointer by the length of the previous context in bytes. Therefore, `myVar` is represented by something like this `context_pointer + compile time offset from context start` where the offset is set at compile time. This should help to explain why we made the decision we did. It hugely simplifies how contexts work, and decreases instructions as the `sys_create_context` subroutine, or even potentially another like it does not have to be called as much as it otherwise would, as well as reducing the memory metadata bloat that contexts require. This is especially important on the NES as both memory and CPU cycles are both limited, so instead of throwing a compile error for a variable being used when it doesn't exist within the scope, we just set it to zero upon the function call, and allow this odd behaviour.
