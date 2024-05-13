@@ -7,6 +7,7 @@ public class Parser : IParser
 {
 	public Node Parse(ILexer lexer)
 	{
+		Warnings.ClearWarnings();
 		return ParseAST(lexer);
 	}
 
@@ -47,6 +48,10 @@ public class Parser : IParser
 				{
 					variableDeclaration.Assignent.Address = varIndex;
 					variableDeclaration.Assignent.IsGlobal = isGlobal;
+				}
+				else if (!variableDeclaration.IsArgument)
+				{
+					Warnings.AddWarning($"Variable Declaration {variableDeclaration.Identifier} does not have an initial assignment, it may contain an unknown value!");
 				}
 				varIndex += 1;
 			}

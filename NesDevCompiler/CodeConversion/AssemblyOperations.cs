@@ -19,7 +19,9 @@ sbc $03";
 
 	public static string GreaterThan()
 	{
-		string greaterThan = @"cmp $03
+		string greaterThan = @"
+inc $03
+cmp $03
 bcs :+
 lda #$00
 jmp :++

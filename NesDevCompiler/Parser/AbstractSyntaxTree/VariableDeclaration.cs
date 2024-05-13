@@ -10,6 +10,7 @@ public class VariableDeclaration : Node
 
 	public int Address;
 	public bool IsGlobal;
+	public bool IsArgument = false;
 
 	public VariableAssignent? Assignent;
 

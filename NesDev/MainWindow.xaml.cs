@@ -19,7 +19,7 @@ namespace NesDev
 	{
 		private string _filePath = "";
 
-		private NesDevCompiler.CodeConversion.ICodeConverter _converter = new NesDevCompiler.CodeConversion.Assembly6502CodeConverter();;
+		private NesDevCompiler.CodeConversion.ICodeConverter _converter = new NesDevCompiler.CodeConversion.Assembly6502CodeConverter();
 
 		public MainWindow()
 		{

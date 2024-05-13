@@ -10,12 +10,78 @@ public class Assembly6502CodeConverter: ICodeConverter
 
 	public string Convert(Node root)
 	{
-		string asm = SetupBase();
-		asm += ConvertContext((Context)root);
+		string asm = "";
+		asm += SetupBase();
+		asm += ConvertContext((Context)root, true) + "\n";
+		asm += SetupSys();
 		return asm;
 	}
 
 	private string SetupBase()
+	{
+		string value = "";
+		value += @".segment ""HEADER""
+  ; .byte ""NES"", $1A      ; iNES header identifier
+  .byte $4E, $45, $53, $1A
+  .byte 2               ; 2x 16KB PRG code
+  .byte 1               ; 1x  8KB CHR data
+  .byte $01, $00        ; mapper 0, vertical mirroring
+
+.segment ""VECTORS""
+  ;; When an NMI happens (once per frame if enabled) the label nmi:
+  .addr nmi
+  ;; When the processor first turns on or is reset, it will jump to the label reset:
+  .addr reset
+  ;; External interrupt IRQ (unused)
+  .addr 0
+
+; ""nes"" linker config requires a STARTUP section, even if it's empty
+.segment ""STARTUP""
+
+; Main code segment for the program
+.segment ""CODE""
+
+reset:
+  sei		; disable IRQs
+  cld		; disable decimal mode
+  ldx #$40
+  stx $4017	; disable APU frame IRQ
+  ldx #$ff 	; Set up stack
+  txs		;  .
+  inx		; now X = 0
+  stx $2000	; disable NMI
+  stx $2001 	; disable rendering
+  stx $4010 	; disable DMC IRQs
+
+;; first wait for vblank to make sure PPU is ready
+vblankwait1:
+  bit $2002
+  bpl vblankwait1
+
+clear_memory:
+  lda #$00
+  sta $0000, x
+  sta $0100, x
+  sta $0200, x
+  sta $0300, x
+  sta $0400, x
+  sta $0500, x
+  sta $0600, x
+  sta $0700, x
+  inx
+  bne clear_memory
+
+;; second wait for vblank, PPU is ready after this
+vblankwait2:
+  bit $2002
+  bpl vblankwait2
+
+main:";
+
+		return value;
+	}
+
+	private string SetupSys()
 	{
 		string utils = "";
 
@@ -38,18 +104,55 @@ sys_clear_context:
   ldx $00
   ldy $01, x
   sty $00
-  rts";
+  rts
+
+forever:
+  jmp forever
+
+nmi:
+  ldx #$00 	; Set SPR-RAM address to 0
+  stx $2003
+
+.segment ""CHARS""";
 
 		return utils + "\n";
 	}
 
-	private string ConvertContext(Context context)
+	private string ConvertContext(Context context, bool isGlobal = false)
 	{
-		string contextString = "";
+		string contextString = "" + "\n";
+
+		if (isGlobal)
+		{
+			contextString += "\n";
+			contextString += "; setting up global context" + "\n";
+			contextString += $@"lda #${ConvertToHex(context.variables.Count + 4)}
+sta $00
+lda #${ConvertToHex(context.variables.Count + 3)}
+sta $01";
+			contextString += "\n";
+		}
 
 		foreach (VariableDeclaration variable in context.variables)
 		{
-			contextString += ConvertVariable(variable);
+			if (isGlobal)
+			{
+				contextString += ConvertVariable(variable);
+			}
+		}
+		if (isGlobal)
+		{
+			List<FunctionDeclaration> mainFuncs = context.functions.Where(f => (f.Identifier == "Main" || f.Identifier == "main")).ToList();
+			if (mainFuncs.Count != 1)
+				throw new Exception("Compile Error: Main function not found!");
+			FunctionDeclaration mainFunc = mainFuncs[0];
+			contextString += $"lda #${ConvertToHex(mainFunc.Size + 3)}" + "\n";
+			contextString += "sta $02" + "\n";
+			contextString += "jsr sys_create_context" + "\n";
+			contextString += $"jsr nesdev_{mainFunc.Identifier}" + "\n";
+			// close context
+			contextString += $"jsr sys_clear_context" + "\n" + "\n";
+			contextString += "jmp forever" + "\n";
 		}
 		foreach (FunctionDeclaration functionDeclaration in context.functions)
 		{
@@ -65,42 +168,6 @@ sys_clear_context:
 		}
 
 		return contextString;
-		/*
-		string contextString = "";
-		foreach (VariableDeclaration variableDeclaration in context.variables)
-		{
-			if (depth != 0)
-				break;
-			contextString += GetIndent(depth);
-			contextString += $"{variableDeclaration.Identifier}: {variableDeclaration.Type}";
-			if (depth == 0 && (variableDeclaration.Assignent != null))
-			{
-				contextString += $" = {ConvertExpression(variableDeclaration.Assignent.Expression)}";
-			}
-			contextString += "\n";
-		}
-		foreach (FunctionDeclaration functionDeclaration in context.functions)
-		{
-			//contextString += GetIndent(depth);
-			contextString += "def ";
-			contextString += functionDeclaration.Identifier;
-			contextString += "(";
-			for (int i = 0; i < functionDeclaration.Arguments.Count; i++)
-			{
-				if (i > 0)
-					contextString += ", ";
-				contextString += ConvertVariable(functionDeclaration.Arguments[i]);
-			}
-			contextString += "):";
-			contextString += "\n";
-			contextString += ConvertContext(functionDeclaration.Body, depth + 1);
-		}
-		foreach (IStatement statement in context.statements)
-		{
-			contextString += ConvertStatement(statement, depth);
-		}
-		return contextString;
-		*/
 	}
 
 	private string ConvertStatement(IStatement statement)
@@ -188,7 +255,11 @@ bne while_statement_end_{label}" + "\n";
 		{
 			ReturnStatement returnStatement = (ReturnStatement)statement;
 			// TODO return
-			return "; return statement" + "\n";
+			statementString += "; return statement" + "\n";
+			statementString += ConvertExpression(returnStatement.ReturnValue) + "\n";
+			statementString += "pla" + "\n";
+			statementString += "rts" + "\n";
+			return statementString;
 		}
 		else if (statement is BreakStatement)
 		{
@@ -314,7 +385,9 @@ bne while_statement_end_{label}" + "\n";
 			{
 				value += ConvertExpression(functionCall.Arguments[i]);
 				value += "lda $00" + "\n";
+				value += "tax" + "\n";
 				value += "adc $00, x" + "\n";
+				value += "tax" + "\n";
 				value += "pla" + "\n";
 				value += $"sta ${ConvertToHex(i + 3)}, x" + "\n";
 			}

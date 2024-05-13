@@ -48,6 +48,7 @@ public class StateMachine
 			if (next.Value == "var")
 			{
 				VariableDeclaration varDecl = VarState(lexer, context);
+				varDecl.IsArgument = true;
 				context.variables.Add(varDecl);
 				if (varDecl.Assignent != null)
 				{
@@ -295,6 +296,10 @@ public class StateMachine
 				if (lexer.Peek().Value == ";")
 					break;
 				args.Add(ParseExpression(lexer));
+				if (!((lexer.Peek().Value == ",") || (lexer.Peek().Value == ")")))
+					throw new CompileError($"Syntax Error: invalid argument list for function call {next.Value}!");
+				if (lexer.Peek().Value == ",")
+					lexer.Next();
 			}
 			Token closeBrackets = lexer.Next();
 			if (closeBrackets.Value != ")")
