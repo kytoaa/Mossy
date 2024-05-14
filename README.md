@@ -6,6 +6,14 @@ This is a project focused on compiling custom code from a .nesdev file to 6502 a
 This is a wip so far, but if you'd like to help, get in touch with the authors and we'll respond soon!
 Also some of the code is horrible so if you think you'd like to fix it a bit go ahead!
 
+# iNES Header format
+As of our first release, our iNES header format cannot be changed. We are working on fixing this in the future.
+The header defaults to:
+* iNES format
+* Mapper 0
+* 32kiB PRG-ROM
+* 8kiB CHR-ROM
+* Vertically mirrored nametables
 
 # The Language
 <b>Core</b>
