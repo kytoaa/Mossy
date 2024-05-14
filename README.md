@@ -14,6 +14,10 @@ The header defaults to:
 * 32kiB PRG-ROM
 * 8kiB CHR-ROM
 * Vertically mirrored nametables
+* No battery-packed RAM
+
+# Assembler
+We currently only support 6502 code written for the cc65 assembler. We plan to add functionality for more assemblers like NesASM.
 
 # The Language
 <b>Core</b>
