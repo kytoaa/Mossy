@@ -137,5 +137,12 @@ namespace NesDev
 				}
 			}
 		}
+
+		private void OpenJNesWindow_Click(object sender, EventArgs e)
+		{
+			JNesHeaderSettingsWindow jNes = new JNesHeaderSettingsWindow();
+			jNes.Owner = this;
+			jNes.Show();
+		}
     }
 }

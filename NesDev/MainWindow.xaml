@@ -23,11 +23,12 @@
                 <ComboBoxItem Content="6502 Assembly"/>
                 <ComboBoxItem Content="Python"/>
             </ComboBox>
+            <Button x:Name="btnJNes" Click="OpenJNesWindow_Click">Click</Button>
         </TabPanel>
 
         <Label Grid.Row="1" x:Name="txtFileName">Untitled</Label>
         
-        <TextBox Grid.Row="2" x:Name="txtCode" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible"></TextBox>
+        <TextBox Grid.Row="2" x:Name="txtCode" FontFamily="Consolas" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible"></TextBox>
 
         <Label Grid.Row="3" x:Name="txtErrorMessage"></Label>
 
