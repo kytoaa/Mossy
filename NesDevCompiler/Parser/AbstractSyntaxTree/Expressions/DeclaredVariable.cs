@@ -3,7 +3,7 @@ namespace NesDevCompiler.Parser.AbstractSyntaxTree;
 public class DeclaredVariable : Expression
 {
 	public string Identifier;
-	public int Offset;
+	public Expression? Offset;
 	public int Address;
 	public bool IsGlobal;
 
@@ -13,7 +13,7 @@ public class DeclaredVariable : Expression
 		return children;
 	}
 
-	public DeclaredVariable(Node parent, string type, string identifier, int offset = 0) : base(parent, type)
+	public DeclaredVariable(Node parent, string type, string identifier, Expression? offset = null) : base(parent, type)
 	{
 		Identifier = identifier;
 		Offset = offset;

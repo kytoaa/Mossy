@@ -6,6 +6,7 @@ public class VariableAssignent : Node, IStatement
 	public Expression Expression;
 
 	public int Address;
+	public Expression Offset;
 	public bool IsGlobal;
 
 	public override List<Node> GetChildren()

@@ -126,9 +126,9 @@ nmi:
 		{
 			contextString += "\n";
 			contextString += "; setting up global context" + "\n";
-			contextString += $@"lda #${ConvertToHex(context.variables.Count + 4)}
+			contextString += $@"lda #${ConvertToHex(context.variables.Sum(v => v.Size) + 4)}
 sta $00
-lda #${ConvertToHex(context.variables.Count + 3)}
+lda #${ConvertToHex(context.variables.Sum(v => v.Size) + 3)}
 sta $01";
 			contextString += "\n";
 		}
@@ -185,7 +185,16 @@ sta $01";
 		{
 			VariableAssignent variableAssignent = (VariableAssignent)statement;
 
-			statementString += ConvertExpression(variableAssignent.Expression);
+			statementString += ConvertExpression(variableAssignent.Expression) + "\n";
+
+			if (variableAssignent.Offset != null)
+			{
+				statementString += ConvertExpression(variableAssignent.Offset) + "\n";
+				statementString += @"pla
+clc
+adc $00
+tax" + "\n";
+			}
 
 			statementString += "pla" + "\n";
 			if (variableAssignent.IsGlobal)
@@ -197,7 +206,7 @@ sta $01";
 			{
 				statementString += $"; local var {variableAssignent.Identifier}" + "\n";
 				statementString += "ldx $00" + "\n";
-				statementString += $"sta {ConvertToHex(variableAssignent.Address + 3)}, x" + "\n";
+				statementString += $"sta ${ConvertToHex(variableAssignent.Address + 3)}, x" + "\n";
 			}
 
 			return statementString + "\n";
@@ -306,17 +315,28 @@ bne while_statement_end_{label}" + "\n";
 		{
 			DeclaredVariable declaredVariable = (DeclaredVariable)expression;
 			string value = "";
+			value += "ldx #$00" + "\n";
+			if (declaredVariable.Offset != null)
+			{
+				value += ConvertExpression(declaredVariable.Offset) + "\n";
+				value += @"pla
+clc
+adc $00
+tax" + "\n";
+			}
 			if (declaredVariable.IsGlobal)
 			{
-				value += $"lda ${ConvertToHex(declaredVariable.Address + 4)}";
+				value += $"lda ${ConvertToHex(declaredVariable.Address + 4)}, x";
 				value += "\n";
 				value += "pha";
 				value += "\n";
 			}
 			else
 			{
-				value += "ldx $00";
-				value += "\n";
+				if (declaredVariable.Offset != null)
+				{
+					value += "ldx $00" + "\n";
+				}
 				value += $"lda ${ConvertToHex(declaredVariable.Address + 3)}, x";
 				value += "\n";
 				value += "pha";

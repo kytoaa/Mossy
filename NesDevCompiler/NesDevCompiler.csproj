@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit" Version="2.7.0" />
+    <Compile Remove="Testing\**" />
+    <EmbeddedResource Remove="Testing\**" />
+    <None Remove="Testing\**" />
   </ItemGroup>
 
 </Project>

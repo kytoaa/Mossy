@@ -89,6 +89,21 @@ public class StateMachine
 	private IStatement StatementState(ILexer lexer, Node parent, Token next)
 	{
 		Token funcOrAssign = lexer.Next();
+		Expression offset = null;
+		if (funcOrAssign.Value == "[")
+		{
+			try
+			{
+				offset = ParseExpression(lexer);
+			}
+			catch (CompileError e)
+			{
+				throw new CompileError(e.Message + " Error in offset!");
+			}
+			if (lexer.Next().Value != "]")
+				throw new CompileError($"Syntax Error: offset must be closed!");
+			funcOrAssign = lexer.Next();
+		}
 		if ((funcOrAssign.Value != "(") && (funcOrAssign.Value != "="))
 			throw new CompileError($"Syntax Error: {next.Value} {funcOrAssign.Value} is not a valid statement, only assignments and function calls are allowed!");
 
@@ -113,7 +128,7 @@ public class StateMachine
 		}
 		else if (funcOrAssign.Value == "=")
 		{
-			IStatement statement = new VariableAssignent(parent, next.Value, ParseExpression(lexer));
+			IStatement statement = new VariableAssignent(parent, next.Value, ParseExpression(lexer)) { Offset = offset };
 			Token endStatement = lexer.Next();
 			if (endStatement.Value != ";")
 				throw new CompileError($"Syntax Error: variable declaration {next.Value} never ends, you forgot a semicolon!");
@@ -275,7 +290,7 @@ public class StateMachine
 		functionDeclaration.Arguments = arguments;
 		functionDeclaration.Body = functionContext;
 		functionDeclaration.Identifier = functionIdentifier.Value;
-		functionDeclaration.Size = functionContext.variables.Count;
+		functionDeclaration.Size = functionContext.variables.Sum(v => v.Size);
 
 		return functionDeclaration;
 	}

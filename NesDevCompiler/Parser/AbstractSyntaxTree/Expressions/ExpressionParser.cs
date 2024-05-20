@@ -19,7 +19,7 @@ public class ExpressionParser
 
 		int bracketlayer = 0;
 
-		while ((lexer.Peek().Value != "," && lexer.Peek().Value != ";") && !(lexer.Peek().Value == ")" && bracketlayer == 0))
+		while ((lexer.Peek().Value != "," && lexer.Peek().Value != ";" && lexer.Peek().Value != "]") && !(lexer.Peek().Value == ")" && bracketlayer == 0))
 		{
 			Token token = lexer.Next();
 			if (token.Value == "(")
@@ -47,6 +47,15 @@ public class ExpressionParser
 			{
 				tree.SetValue(token);
 			}
+			if (token.Value == "[")
+			{
+				tree.AddChild();
+				tree.SetValue(token);
+			}
+			if (token.Value == "]")
+			{
+				tree.MoveUp();
+			}
 		}
 		if (tree.root.value == default)
 		{
@@ -59,10 +68,15 @@ public class ExpressionParser
 	{
 		Expression expression = null;
 
+		if (node == null)
+		{
+			return null;
+		}
+
 		if (node.value.Type == TokenType.Identifier)
 		{
 			expression = new DeclaredVariable(parent, "default", node.value.Value);
-			((DeclaredVariable)expression).Offset = int.Parse(node.offset);
+			((DeclaredVariable)expression).Offset = ConvertToAST(expression, node.l);
 		}
 		else if (node.value.Type == TokenType.Value)
 		{
@@ -86,6 +100,10 @@ public class ExpressionParser
 			{
 				throw new Exception("Operator without operands");
 			}
+		}
+		else if (node.value.Value == "[")
+		{
+			return ConvertToAST(null, node.l);
 		}
 		else
 		{
