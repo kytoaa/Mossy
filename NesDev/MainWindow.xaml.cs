@@ -34,7 +34,9 @@ namespace NesDev
 
 			string text = "";
 
-			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text));
+			List<NesDevCompiler.Processors.ILexerProcessor> lexerProcessors = new List<NesDevCompiler.Processors.ILexerProcessor>() { new NesDevCompiler.Processors.ConstantProcessor() };
+
+			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text), lexerProcessors);
 			txtErrorMessage.Content = "";
 
 			NesDevCompiler.Parser.AbstractSyntaxTree.Node node = null;

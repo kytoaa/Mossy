@@ -17,7 +17,7 @@ public class Parser : IParser
 		Tree tree = new Tree(root);
 
 		StateMachine stateMachine = new StateMachine();
-		Node ast = stateMachine.Parse(lexer, tree);
+		Node ast = stateMachine.Parse(lexer);
 
 		SetParent(ast);
 		CheckVariablesAndFunctions(ast);

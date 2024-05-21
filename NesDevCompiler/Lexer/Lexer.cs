@@ -1,15 +1,18 @@
 using NesDevCompiler.CharacterStream;
 using System.Diagnostics;
+using NesDevCompiler.Processors;
 
 namespace NesDevCompiler.Lexer;
 
 public class Lexer : ILexer
 {
 	private ICharacterStream _stream;
+	private IEnumerable<ILexerProcessor> _processors;
 
-	public Lexer(ICharacterStream stream)
+	public Lexer(ICharacterStream stream, IEnumerable<ILexerProcessor> processors)
 	{
 		_stream = stream;
+		_processors = processors;
 	}
 
 	public Token Peek(bool ignoreWhitespace = true, int t = 0)
@@ -43,6 +46,8 @@ public class Lexer : ILexer
 			}
 		}
 
+		token = ProcessToken(token);
+
 		return token;
 	}
 
@@ -54,6 +59,8 @@ public class Lexer : ILexer
 		{
 			token = GetToken(_stream);
 		}
+
+		token = ProcessToken(token);
 
 		return token;
 	}
@@ -92,5 +99,15 @@ public class Lexer : ILexer
 			}
 			stream.Read();
 		}
+	}
+
+	public Token ProcessToken(Token token)
+	{
+		foreach (ILexerProcessor processor in _processors)
+		{
+			// i feel like theres a more elegant solution than passing in the lexer
+			token = processor.Process(token).Invoke(this);
+		}
+		return token;
 	}
 }

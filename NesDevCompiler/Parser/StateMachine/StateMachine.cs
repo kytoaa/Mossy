@@ -3,9 +3,17 @@ using NesDevCompiler.Parser.AbstractSyntaxTree;
 
 namespace NesDevCompiler.Parser;
 
+//---------------------------------------------------------
+// 
+// If you are reading this, then i am so sorry you have to 
+// read this code, it is horrific and could probably do
+// with a massive refactor. However it work's and im scared
+// to touch it, so read on at your own risk
+//
+//---------------------------------------------------------
 public class StateMachine
 {
-	public Node Parse(ILexer lexer, Tree tree)
+	public Node Parse(ILexer lexer)
 	{
 		return GlobalContextState(lexer);
 	}
@@ -331,16 +339,4 @@ public class StateMachine
 		//expression.parent = parent;
 
 	}
-
-	private FunctionCall ParseFunction(ILexer lexer, string identifier)
-	{
-		throw new NotImplementedException();
-	}
-
-
-/*	private Tree ThrowError(string error, Tree tree)
-	{
-		tree.current = new CompileError(tree.current, error);
-		return tree;
-	}*/
 }
