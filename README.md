@@ -39,7 +39,7 @@ Square brackets are used to index arrays, like this `myArray[3] = 2;`, or `myVar
 
 <b>Keywords</b>
 
-- This list is all the currently working keywords, we are working to implement others!
+This list is all the currently working keywords, we are working to implement others!
 
 `func` declares a function, functions must have a return type and are declared like this `func T MyFunc() { // Code here }` they may have any number of arguments.
 
