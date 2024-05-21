@@ -9,6 +9,7 @@ namespace NesDev
 	/// </summary>
 	public partial class App : Application
 	{
+ 		
 	}
 
 }
