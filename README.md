@@ -31,6 +31,11 @@ Scope is defined with `{` and `}`, with all statements ending in `;`.
 
 Comments use `//` and last until the end of the line.
 
+Arrays are declared like this `var int[5] myArray;`, arrays do not have any methods and work similarly to in c. Arrays are effectively just a buffer. When declaring them `int[length]`, length represents the size of the array.
+
+Square brackets are used to index arrays, like this `myArray[3] = 2;`, or `myVariable = myArray[2];`. However this is because square brackets represent an offset. This means that you can take any offset from any variable, be careful with this as it can cause very hard to trace and very dangerous bugs.
+
+
 
 <b>Keywords</b>
 
@@ -39,6 +44,8 @@ Comments use `//` and last until the end of the line.
 `func` declares a function, functions must have a return type and are declared like this `func T MyFunc() { // Code here }` they may have any number of arguments.
 
 `var` declares a variable, variables must have a type and are declared like this `var int myVar` they may have an initial assignment.
+
+`const` declares a constant, constants must have a type and are declared like this `const int MY_CONST` they must have an initial assignment and cannot be changed. Do not declare them within scopes, they can have unexpected behaviour.
 
 `if` declares an if statement, they must have a boolean expression `if (myexpression) { // Code here}`.
 
