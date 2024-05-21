@@ -187,25 +187,37 @@ sta $01";
 
 			statementString += ConvertExpression(variableAssignent.Expression) + "\n";
 
+			statementString += "ldx #$00" + "\n";
 			if (variableAssignent.Offset != null)
 			{
+				statementString += $"; calculating offset for {variableAssignent.Identifier}" + "\n";
 				statementString += ConvertExpression(variableAssignent.Offset) + "\n";
-				statementString += @"pla
+				statementString += $"; applying offset for {variableAssignent.Identifier}" + "\n";
+				if (variableAssignent.IsGlobal)
+				{
+					statementString += @"pla
+tax" + "\n";
+				}
+				else
+				{
+					statementString += @"pla
 clc
 adc $00
 tax" + "\n";
+				}
 			}
 
 			statementString += "pla" + "\n";
 			if (variableAssignent.IsGlobal)
 			{
 				statementString += $"; global var {variableAssignent.Identifier}" + "\n";
-				statementString += $"sta ${ConvertToHex(variableAssignent.Address + 4)}" + "\n";
+				statementString += $"sta ${ConvertToHex(variableAssignent.Address + 4)}, x" + "\n";
 			}
 			else
 			{
 				statementString += $"; local var {variableAssignent.Identifier}" + "\n";
-				statementString += "ldx $00" + "\n";
+				if (variableAssignent.Offset != null)
+					statementString += "ldx $00" + "\n";
 				statementString += $"sta ${ConvertToHex(variableAssignent.Address + 3)}, x" + "\n";
 			}
 
@@ -318,11 +330,22 @@ bne while_statement_end_{label}" + "\n";
 			value += "ldx #$00" + "\n";
 			if (declaredVariable.Offset != null)
 			{
+				value += $"; calculating offset for {declaredVariable.Identifier}" + "\n";
 				value += ConvertExpression(declaredVariable.Offset) + "\n";
-				value += @"pla
+				value += $"; applying offset for {declaredVariable.Identifier}" + "\n";
+				if (declaredVariable.IsGlobal)
+				{
+					value += @"pla
+tax" + "\n";
+				}
+				else
+				{
+					value += @"pla
 clc
 adc $00
 tax" + "\n";
+				}
+
 			}
 			if (declaredVariable.IsGlobal)
 			{

@@ -18,8 +18,9 @@ public class ExpressionParser
 		ExpressionTree tree = new ExpressionTree();
 
 		int bracketlayer = 0;
+		int squareBracketLayer = 0;
 
-		while ((lexer.Peek().Value != "," && lexer.Peek().Value != ";" && lexer.Peek().Value != "]") && !(lexer.Peek().Value == ")" && bracketlayer == 0))
+		while ((lexer.Peek().Value != "," && lexer.Peek().Value != ";") && !(lexer.Peek().Value == ")" && bracketlayer == 0) && !(lexer.Peek().Value == "]" && squareBracketLayer == 0))
 		{
 			Token token = lexer.Next();
 			if (token.Value == "(")
@@ -37,24 +38,24 @@ public class ExpressionParser
 				tree.AddChild().SetValue(token);
 				if (lexer.Peek().Value == "[")
 				{
-					lexer.Next();
-					tree.SetOffset(lexer.Next().Value);
-					lexer.Next();
+					tree.AddChild();
+					tree.SetValue(lexer.Next());
+					squareBracketLayer++;
 				}
-				tree.MoveUp();
+				else
+				{
+					tree.MoveUp();
+				}
 			}
 			if (token.Type == TokenType.Operator)
 			{
 				tree.SetValue(token);
 			}
-			if (token.Value == "[")
-			{
-				tree.AddChild();
-				tree.SetValue(token);
-			}
+
 			if (token.Value == "]")
 			{
-				tree.MoveUp();
+				tree.MoveUp().MoveUp();         // Moving up if offset closes - tree looks something like this		root->var->offset	we move up to root
+				squareBracketLayer--;
 			}
 		}
 		if (tree.root.value == default)
