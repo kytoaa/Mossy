@@ -216,8 +216,15 @@ tax" + "\n";
 			else
 			{
 				statementString += $"; local var {variableAssignent.Identifier}" + "\n";
-				if (variableAssignent.Offset != null)
+				if (variableAssignent.Offset == null)
+				{
+					statementString += "; no offset but local, offsetting by context pointer" + "\n";
 					statementString += "ldx $00" + "\n";
+				}
+				else
+				{
+					statementString += "; has local offset" + "\n";
+				}
 				statementString += $"sta ${ConvertToHex(variableAssignent.Address + 3)}, x" + "\n";
 			}
 
@@ -356,9 +363,14 @@ tax" + "\n";
 			}
 			else
 			{
-				if (declaredVariable.Offset != null)
+				if (declaredVariable.Offset == null)
 				{
+					value += "; no offset but local, offsetting by context pointer" + "\n";
 					value += "ldx $00" + "\n";
+				}
+				else
+				{
+					value += "; has local offset" + "\n";
 				}
 				value += $"lda ${ConvertToHex(declaredVariable.Address + 3)}, x";
 				value += "\n";
