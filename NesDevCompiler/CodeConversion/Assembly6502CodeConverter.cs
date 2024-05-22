@@ -58,18 +58,7 @@ vblankwait1:
   bit $2002
   bpl vblankwait1
 
-clear_memory:
-  lda #$00
-  sta $0000, x
-  sta $0100, x
-  sta $0200, x
-  sta $0300, x
-  sta $0400, x
-  sta $0500, x
-  sta $0600, x
-  sta $0700, x
-  inx
-  bne clear_memory
+  jsr clear_memory
 
 ;; second wait for vblank, PPU is ready after this
 vblankwait2:
@@ -109,9 +98,40 @@ sys_clear_context:
 forever:
   jmp forever
 
+clear_memory:
+  lda #$00
+  sta $0000, x
+  sta $0100, x
+  sta $0200, x
+  sta $0300, x
+  sta $0400, x
+  sta $0500, x
+  sta $0600, x
+  sta $0700, x
+  inx
+  bne clear_memory
+  rts
+
 nmi:
-  ldx #$00 	; Set SPR-RAM address to 0
-  stx $2003
+	pha
+ 	txa
+	pha
+	tya
+ 	pha
+	php
+
+	lda $07ff
+ 	bne skip_nmi
+
+skip_nmi:
+ 	plp
+ 	pla
+	tay
+ 	pla
+	tax
+ 	pla
+
+  rts
 
 .segment ""CHARS""";
 
