@@ -142,7 +142,7 @@ namespace NesDev
 
 		private void OpenJNesWindow_Click(object sender, EventArgs e)
 		{
-			JNesHeaderSettingsWindow jNes = new JNesHeaderSettingsWindow();
+			var jNes = new View.TextEditorWindow();
 			jNes.Owner = this;
 			jNes.Show();
 		}
