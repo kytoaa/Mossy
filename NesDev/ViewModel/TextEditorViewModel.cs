@@ -21,11 +21,11 @@ public class TextEditorViewModel : INotifyPropertyChanged
 		}
 	}
 
-	private Model.TextEditor.TextEditor editor = new Model.TextEditor.TextEditor();
+	private Model.TextEditor.TextEditor editor;
 
 	public TextEditorViewModel()
 	{
-
+		editor = new Model.TextEditor.TextEditor();
 	}
 
 	public event PropertyChangedEventHandler? PropertyChanged;

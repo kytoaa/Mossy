@@ -7,19 +7,20 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 {
 	private string _buffer;
 
+	private int _cursor;
 	private int _cursorPos
 	{
-		get => _cursorPos;
+		get => _cursor;
 		set
 		{
-			_cursorPos = value;
+			_cursor = value;
 			if (_cursorPos < 0)
 			{
-				_cursorPos = 0;
+				_cursor = 0;
 			}
 			if (_cursorPos > _buffer.Length)
 			{
-				_cursorPos = _buffer.Length;
+				_cursor = _buffer.Length;
 			}
 		}
 	}
