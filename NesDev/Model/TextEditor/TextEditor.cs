@@ -17,19 +17,23 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 			if (_cursorPos < 0)
 			{
 				_cursor = 0;
+				UpdateIdealPos();
 			}
 			if (_cursorPos > _buffer.Length)
 			{
 				_cursor = _buffer.Length;
+				UpdateIdealPos();
 			}
 		}
 	}
+	private int _idealPos;
+	private void UpdateIdealPos() => _idealPos = CursorPositionInLine;
 
 	private Selection _selection;
 
 	public string Buffer => _buffer;
 	public int CursorPos => _cursorPos;
-	public string[] Lines => Lines;
+	public string[] Lines => Buffer.Split('\n');
 
 	/// <summary>
 	/// Returns the line number the cursor is currently in
@@ -43,8 +47,8 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 			int len = 0;
 			for (int i = 0; i < lines.Length; i++)
 			{
-				len += lines[i].Length;
-				if (len >= CursorPos)
+				len += lines[i].Length + 1;
+				if (len > CursorPos)
 				{
 					return i;
 				}
@@ -60,7 +64,7 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 			int count = 0;
 			for (int i = 0; i < line; i++)
 			{
-				count += GetLineLength(line);
+				count += GetLineLength(i) + 1;
 			}
 			return CursorPos - count;
 		}
@@ -70,6 +74,8 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 	{
 		string[] lines = Lines;
 		if (line >= lines.Length)
+			return 0;
+		if (line < 0)
 			return 0;
 
 		return lines[line].Length;
@@ -91,7 +97,7 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 	public void AddAtCursor(string str)
 	{
 		_buffer = _buffer.Insert(CursorPos, str);
-		_cursorPos += str.Length;
+		MoveRight(str.Length);
 	}
 
 	public void RemoveAtCursor()
@@ -100,6 +106,7 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 		{
 			_buffer = _buffer.Remove(_selection.startIndex, _selection.length);
 			_cursorPos = _selection.startIndex;
+			UpdateIdealPos();
 			_selection = default;
 		}
 		else
@@ -132,6 +139,22 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 		{
 			_cursorPos -= pos + 1; // beginning of line + 1
 		}
+		else
+		{
+			_cursorPos -= GetLineLength(i - 1) + 1;
+			int newPos = CursorPositionInLine;
+			if (_idealPos >= newPos)
+			{
+				if (_idealPos > GetLineLength(Line))
+				{
+					_cursorPos += GetLineLength(Line) - newPos;
+				}
+				else
+				{
+					_cursorPos += _idealPos - newPos;
+				}
+			}
+		}
 	}
 
 	public void MoveDown()
@@ -140,18 +163,36 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 		int pos = CursorPositionInLine;
 		if (GetLineLength(i + 1) < pos)
 		{
-			_cursorPos += GetLineLength(i) - pos + 1; // end of line + 1
+			_cursorPos += GetLineLength(i) - pos + GetLineLength(i + 1) + 1; // end of line + 1
+		}
+		else
+		{
+			_cursorPos += GetLineLength(i) + 1;
+			int newPos = CursorPositionInLine;
+			if (_idealPos >= newPos)
+			{
+				if (_idealPos > GetLineLength(Line))
+				{
+					_cursorPos += GetLineLength(Line) - newPos;
+				}
+				else
+				{
+					_cursorPos += _idealPos - newPos;
+				}
+			}
 		}
 	}
 
 	public void MoveLeft(int amount = 1)
 	{
 		_cursorPos -= amount;
+		UpdateIdealPos();
 	}
 
 	public void MoveRight(int amount = 1)
 	{
 		_cursorPos += amount;
+		UpdateIdealPos();
 	}
 	#endregion
 

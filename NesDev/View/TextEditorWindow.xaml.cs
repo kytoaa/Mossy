@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Navigation;
 using NesDev.ViewModel;
@@ -22,10 +23,7 @@ namespace NesDev.View
             //};
 
             InitializeComponent();
-
-            _viewModel.Text = "Hello, World!";
+            TextInput.TextCompositionEvent = _viewModel.OnTextChanged;
         }
-
-        private void TextChangedEventHandler(object sender, System.Windows.Controls.TextChangedEventArgs e) { }//_viewModel.TextChangedEventHandler(sender, e);
 	}
 }
