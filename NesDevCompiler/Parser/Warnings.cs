@@ -1,4 +1,4 @@
-namespace NesDevCompiler.Parser;
+namespace Mossy.Parser;
 
 public static class Warnings
 {

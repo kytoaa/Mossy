@@ -1,8 +1,8 @@
-using NesDevCompiler.CharacterStream;
+using Mossy.CharacterStream;
 using System.Diagnostics;
-using NesDevCompiler.Processors;
+using Mossy.Processors;
 
-namespace NesDevCompiler.Lexer;
+namespace Mossy.Lexer;
 
 public class Lexer : ILexer
 {

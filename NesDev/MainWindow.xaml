@@ -5,32 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NesDev"
         mc:Ignorable="d"
-        Title="NesDev" Height="360" Width="640">
+        Title="NesDev" Height="360" Width="420">
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
-            <RowDefinition Height="30"/>
             <RowDefinition Height="*" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-
-        <TabPanel Grid.Row="0" Margin="5,0,0,0">
-            <Button x:Name="btnFileOpen" Margin="0,0,0,0" Click="ButtonFileOpen_Click">Open</Button>
-            <Button x:Name="btnSave" Click="ButtonSave_Click">Save</Button>
-            <Button x:Name="btnCompile" Click="ButtonCompile_Click">Compile</Button>
-            <ComboBox x:Name="drpdwnCompileTo" Width="90" SelectionChanged="drpdwnCompileTo_SelectionChanged" SelectedIndex="0">
-                <ComboBoxItem Content="6502 Assembly"/>
-                <ComboBoxItem Content="Python"/>
-            </ComboBox>
-            <Button x:Name="btnJNes" Click="OpenJNesWindow_Click">Click</Button>
-        </TabPanel>
-
-        <Label Grid.Row="1" x:Name="txtFileName">Untitled</Label>
         
-        <TextBox Grid.Row="2" x:Name="txtCode" FontFamily="Consolas" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible"></TextBox>
+        <Button Grid.Row="0" x:Name="btnFileOpen" FontFamily="Consolas" FontSize="15" Click="ButtonFileOpen_Click">Open</Button>
+        <Button Grid.Row="1" x:Name="btnOpenNew" FontFamily="Consolas" FontSize="15" Click="ButtonFileNew_Click">New</Button>
+        <Button Grid.Row="2" x:Name="btnOpenSettings" FontFamily="Consolas" FontSize="15" Click="ButtonOpenSettings_Click">Settings</Button>
 
-        <Label Grid.Row="3" x:Name="txtErrorMessage"></Label>
-
+        <Grid Grid.Row="3" Margin="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            <Button Grid.Column="0" x:Name="btnOpenDocumentation" FontFamily="Consolas" FontSize="15" Click="ButtonOpenDocumentation_Click">Open Documentation</Button>
+            <Button Grid.Column="1" x:Name="btnOpenGithub" FontFamily="Consolas" FontSize="15" Click="ButtonOpenGithub_Click">Open Github</Button>
+            
+        </Grid>
     </Grid>
 </Window>

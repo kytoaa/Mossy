@@ -1,4 +1,4 @@
-namespace NesDevCompiler.CharacterStream;
+namespace Mossy.CharacterStream;
 
 /// <summary>
 /// Represents an abstract Character Stream.

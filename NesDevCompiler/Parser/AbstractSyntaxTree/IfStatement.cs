@@ -1,6 +1,6 @@
 using System.Reflection.Metadata.Ecma335;
 
-namespace NesDevCompiler.Parser.AbstractSyntaxTree;
+namespace Mossy.Parser.AbstractSyntaxTree;
 
 public class IfStatement : Node, IStatement
 {

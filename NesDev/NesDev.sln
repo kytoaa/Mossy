@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NesDev", "NesDev.csproj", "{17051EB4-5614-483F-93D7-0E49C7912388}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NesDevCompiler", "..\NesDevCompiler\NesDevCompiler.csproj", "{FAAC1578-4840-42E1-9303-7CCCE9B39699}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mossy", "..\NesDevCompiler\Mossy.csproj", "{FAAC1578-4840-42E1-9303-7CCCE9B39699}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

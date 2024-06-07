@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace NesDevCompiler.Lexer;
+namespace Mossy.Lexer;
 
 public record struct Token
 {

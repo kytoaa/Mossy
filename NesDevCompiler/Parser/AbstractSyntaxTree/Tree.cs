@@ -1,4 +1,4 @@
-namespace NesDevCompiler.Parser.AbstractSyntaxTree;
+namespace Mossy.Parser.AbstractSyntaxTree;
 
 public class Tree
 {

@@ -1,4 +1,4 @@
-namespace NesDevCompiler.CharacterStream;
+namespace Mossy.CharacterStream;
 
 public class CharacterStream : ICharacterStream
 {
