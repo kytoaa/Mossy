@@ -9,9 +9,9 @@ public class Program
 		if (args.Length > 0)
 		{
 			Console.WriteLine("Hello, World!");
-			Console.WriteLine("Welcome to NesDev!");
+			Console.WriteLine("Welcome to Liken!");
 
-			var app = new NesDev.CLI.App();
+			var app = new Liken.CLI.App();
 			app.Initialize();
 			app.Run();
 		}
@@ -19,7 +19,7 @@ public class Program
 		{
 			HideConsoleWindow();
 
-			var app = new NesDev.App();
+			var app = new Liken.App();
 			app.InitializeComponent();
 			app.Run();
 		}

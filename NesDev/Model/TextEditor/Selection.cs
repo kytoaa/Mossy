@@ -1,4 +1,4 @@
-namespace NesDev.Model.TextEditor;
+namespace Liken.Model.TextEditor;
 
 /// <summary>
 /// Represents a selection within the text editor

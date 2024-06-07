@@ -1,4 +1,4 @@
-namespace NesDev.CLI;
+namespace Liken.CLI;
 
 public class InputReader
 {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows.Input;
 using System.IO;
 
-namespace NesDev.ViewModel;
+namespace Liken.ViewModel;
 
 public class TextEditorViewModel : INotifyPropertyChanged
 {

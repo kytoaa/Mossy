@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 
-namespace NesDev
+namespace Liken
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -39,8 +39,8 @@ namespace NesDev
 			// Configure open file dialog box
 			var dialog = new Microsoft.Win32.OpenFileDialog();
 			dialog.FileName = "program"; // Default file name
-			dialog.DefaultExt = ".nesdev"; // Default file extension
-			dialog.Filter = "NesDev documents (.nesdev)|*.nesdev"; // Filter files by extension
+			dialog.DefaultExt = ".mos"; // Default file extension
+			dialog.Filter = "Mossy documents (.mos)|*.mos"; // Filter files by extension
 
 			// Show open file dialog box
 			bool? result = dialog.ShowDialog();

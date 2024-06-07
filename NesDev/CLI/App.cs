@@ -1,6 +1,6 @@
-using NesDev.Model.TextEditor;
+using Liken.Model.TextEditor;
 
-namespace NesDev.CLI;
+namespace Liken.CLI;
 
 public class App
 {

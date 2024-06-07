@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Navigation;
-using NesDev.ViewModel;
+using Liken.ViewModel;
 
-namespace NesDev.View
+namespace Liken.View
 {
     /// <summary>
     /// Interaction logic for Window1.xaml

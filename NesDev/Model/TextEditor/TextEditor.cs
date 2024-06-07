@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Linq;
 
-namespace NesDev.Model.TextEditor;
+namespace Liken.Model.TextEditor;
 
 public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>, IEnumerable<string>
 {

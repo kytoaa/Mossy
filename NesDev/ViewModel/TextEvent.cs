@@ -1,6 +1,6 @@
 using System.CodeDom;
 
-namespace NesDev.ViewModel;
+namespace Liken.ViewModel;
 
 public class TextEvent
 {
