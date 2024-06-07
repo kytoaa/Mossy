@@ -67,12 +67,12 @@ namespace Liken
 
 		private void ButtonOpenDocumentation_Click(object sender, RoutedEventArgs e)
 		{
-			OpenAddress("http://github.com/kytoaa/NesDev");
+			OpenAddress("http://github.com/kytoaa/Mossy");
 		}
 
 		private void ButtonOpenGithub_Click(object sender, RoutedEventArgs e)
 		{
-			OpenAddress("http://www.github.com/kytoaa/NesDev");
+			OpenAddress("http://www.github.com/kytoaa/Mossy");
 		}
 
 		private void OpenAddress(string address)
