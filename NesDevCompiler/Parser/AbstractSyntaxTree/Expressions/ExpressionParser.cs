@@ -1,7 +1,7 @@
-using NesDevCompiler.Lexer;
+using Mossy.Lexer;
 using System.Security.Cryptography.X509Certificates;
 
-namespace NesDevCompiler.Parser.AbstractSyntaxTree;
+namespace Mossy.Parser.AbstractSyntaxTree;
 
 public class ExpressionParser
 {

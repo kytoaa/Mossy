@@ -1,7 +1,7 @@
 using System;
-using NesDevCompiler.Lexer;
+using Mossy.Lexer;
 
-namespace NesDevCompiler.Processors;
+namespace Mossy.Processors;
 
 public class ConstantProcessor : ILexerProcessor
 {

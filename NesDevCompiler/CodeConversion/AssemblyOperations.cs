@@ -1,4 +1,4 @@
-namespace NesDevCompiler.CodeConversion;
+namespace Mossy.CodeConversion;
 
 public static class AssemblyOperations
 {

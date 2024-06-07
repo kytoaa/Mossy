@@ -1,6 +1,6 @@
-using NesDevCompiler.CharacterStream;
+using Mossy.CharacterStream;
 
-namespace NesDevCompiler.Lexer;
+namespace Mossy.Lexer;
 
 public static class TokenIdentifier
 {

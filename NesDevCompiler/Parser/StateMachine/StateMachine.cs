@@ -1,7 +1,7 @@
-﻿using NesDevCompiler.Lexer;
-using NesDevCompiler.Parser.AbstractSyntaxTree;
+﻿using Mossy.Lexer;
+using Mossy.Parser.AbstractSyntaxTree;
 
-namespace NesDevCompiler.Parser;
+namespace Mossy.Parser;
 
 //---------------------------------------------------------
 // 

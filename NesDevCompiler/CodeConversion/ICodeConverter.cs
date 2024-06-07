@@ -1,6 +1,6 @@
-using NesDevCompiler.Parser.AbstractSyntaxTree;
+using Mossy.Parser.AbstractSyntaxTree;
 
-namespace NesDevCompiler.CodeConversion;
+namespace Mossy.CodeConversion;
 
 public interface ICodeConverter
 {

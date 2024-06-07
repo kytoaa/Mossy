@@ -1,4 +1,4 @@
-namespace NesDevCompiler.Lexer;
+namespace Mossy.Lexer;
 
 public enum TokenType
 {

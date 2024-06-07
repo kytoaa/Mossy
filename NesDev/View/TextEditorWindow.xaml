@@ -11,6 +11,7 @@
             <RowDefinition Height="300" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <local:CodeBox Grid.Row="0" x:Name="TextInput" Text="{Binding Path=Text}" FontFamily="Consolas" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" Grid.RowSpan="2"></local:CodeBox>
+        <local:CodeBox Grid.Row="0" x:Name="CodeInput" Text="{Binding Path=Text}" FontFamily="Consolas" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" Grid.RowSpan="2"></local:CodeBox>
+        <TextBlock Grid.Row="1" Text="{Binding Path=Output}" FontFamily="Consolas"></TextBlock>
     </Grid>
 </Window>

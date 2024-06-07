@@ -17,53 +17,21 @@ namespace NesDev
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private string _filePath = "";
-
-		private NesDevCompiler.CodeConversion.ICodeConverter _converter = new NesDevCompiler.CodeConversion.Assembly6502CodeConverter();
-
 		public MainWindow()
 		{
 			InitializeComponent();
 		}
 
-		private void ButtonCompile_Click(object sender, RoutedEventArgs e)
+		private void OpenNewEditor(string address = "")
 		{
-			if (string.IsNullOrEmpty(_filePath))
+			if (!string.IsNullOrEmpty(address) && !Path.Exists(address))
+			{
 				return;
-			string path = Path.ChangeExtension(_filePath, ".s");
-
-			string text = "";
-
-			List<NesDevCompiler.Processors.ILexerProcessor> lexerProcessors = new List<NesDevCompiler.Processors.ILexerProcessor>() { new NesDevCompiler.Processors.ConstantProcessor() };
-
-			NesDevCompiler.Lexer.ILexer lexer = new NesDevCompiler.Lexer.Lexer(new NesDevCompiler.CharacterStream.CharacterStream(txtCode.Text), lexerProcessors);
-			txtErrorMessage.Content = "";
-
-			NesDevCompiler.Parser.AbstractSyntaxTree.Node node = null;
-			try
-			{
-				node = new NesDevCompiler.Parser.Parser().Parse(lexer);
-				Debug.WriteLine(node);
-				txtErrorMessage.Content = "Compiled!";
-			}
-			catch (Exception ex)
-			{
-				txtErrorMessage.Content = ex.Message;
-			}
-			
-			if (node != null)
-			{
-				try
-				{
-					text = _converter.Convert(node);
-				}
-				catch (Exception ex)
-				{
-					txtErrorMessage.Content = ex.Message;
-				}
 			}
 
-			File.WriteAllText(path, text);
+			var editor = new View.TextEditorWindow(address);
+			editor.Owner = this;
+			editor.Show();
 		}
 
 		private void ButtonFileOpen_Click(object sender, RoutedEventArgs e)
@@ -81,70 +49,44 @@ namespace NesDev
 			if (result == true)
 			{
 				// Open document
-				string filename = dialog.FileName;
-				_filePath = filename;
-				txtFileName.Content = filename;
-				
-				txtCode.Text = File.ReadAllText(filename);
+				string filePath = dialog.FileName;
+
+				OpenNewEditor(filePath);
 			}
 		}
 
-		private void ButtonSave_Click(object sender, RoutedEventArgs e)
+		private void ButtonFileNew_Click(object sender, RoutedEventArgs e)
 		{
-			if (string.IsNullOrEmpty(_filePath))
-			{
-				SaveAs();
-			}
-			else
-			{
-				File.WriteAllText(_filePath, txtCode.Text);
-			}
+			OpenNewEditor();
 		}
 
-		private void SaveAs()
+		private void ButtonOpenSettings_Click(object sender, RoutedEventArgs e)
 		{
-			// Configure save file dialog box
-			var dialogue = new Microsoft.Win32.SaveFileDialog();
-			dialogue.FileName = "Document"; // Default file name
-			dialogue.DefaultExt = ".nesdev"; // Default file extension
-			dialogue.Filter = "NesDev documents (.nesdev)|*.nesdev"; // Filter files by extension
 
-			// Show save file dialog box
-			bool? result = dialogue.ShowDialog();
-
-			// Process save file dialog box results
-			if (result == true)
-			{
-				// Save document
-				string filename = dialogue.FileName;
-
-				File.WriteAllText(filename, txtCode.Text);
-				_filePath = filename;
-				txtFileName.Content = filename;
-			}
 		}
 
-		private void drpdwnCompileTo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void ButtonOpenDocumentation_Click(object sender, RoutedEventArgs e)
 		{
-			if (drpdwnCompileTo.SelectedItem != null)
-			{
-				switch (drpdwnCompileTo.SelectedIndex)
-				{
-					case 0:
-						_converter = new NesDevCompiler.CodeConversion.Assembly6502CodeConverter();
-						break;
-					case 1:
-						_converter = new NesDevCompiler.CodeConversion.PythonCodeConverter();
-						break;
-				}
-			}
+			OpenAddress("http://github.com/kytoaa/NesDev");
 		}
 
-		private void OpenJNesWindow_Click(object sender, EventArgs e)
+		private void ButtonOpenGithub_Click(object sender, RoutedEventArgs e)
 		{
-			var jNes = new View.TextEditorWindow();
-			jNes.Owner = this;
-			jNes.Show();
+			OpenAddress("http://www.github.com/kytoaa/NesDev");
 		}
-    }
+
+		private void OpenAddress(string address)
+		{
+			Process.Start(new ProcessStartInfo
+			{
+				FileName = address,
+				UseShellExecute = true,
+			});
+/*			await Task.Run(() => Process.Start(new ProcessStartInfo
+			{
+				FileName = address,
+				UseShellExecute = true,
+			}));*/
+		}
+	}
 }

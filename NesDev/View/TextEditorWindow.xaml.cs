@@ -13,9 +13,16 @@ namespace NesDev.View
     {
         private TextEditorViewModel _viewModel;
 
-        public TextEditorWindow()
+        public TextEditorWindow(string address = "")
         {
-            _viewModel = new TextEditorViewModel();
+            if (string.IsNullOrEmpty(address))
+            {
+                _viewModel = new TextEditorViewModel();
+            }
+            else
+            {
+                _viewModel = new TextEditorViewModel(address);
+            }
 
             DataContext = _viewModel;
             //_viewModel.SetCursorPos += t => {
@@ -23,7 +30,8 @@ namespace NesDev.View
             //};
 
             InitializeComponent();
-            TextInput.TextCompositionEvent = _viewModel.OnTextChanged;
+            CodeInput.TextCompositionEvent = _viewModel.OnTextChanged;
+            _viewModel.Initialize();
         }
 	}
 }

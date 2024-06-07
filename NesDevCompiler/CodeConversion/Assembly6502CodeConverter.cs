@@ -1,6 +1,6 @@
-using NesDevCompiler.Parser.AbstractSyntaxTree;
+using Mossy.Parser.AbstractSyntaxTree;
 
-namespace NesDevCompiler.CodeConversion;
+namespace Mossy.CodeConversion;
 
 public class Assembly6502CodeConverter: ICodeConverter
 {
@@ -149,7 +149,7 @@ sta $01";
 			contextString += $"lda #${ConvertToHex(mainFunc.Size + 3)}" + "\n";
 			contextString += "sta $02" + "\n";
 			contextString += "jsr sys_create_context" + "\n";
-			contextString += $"jsr nesdev_{mainFunc.Identifier}" + "\n";
+			contextString += $"jsr mossy_{mainFunc.Identifier}" + "\n";
 			// close context
 			contextString += $"jsr sys_clear_context" + "\n" + "\n";
 			contextString += "jmp forever" + "\n";
@@ -157,7 +157,7 @@ sta $01";
 		foreach (FunctionDeclaration functionDeclaration in context.functions)
 		{
 			contextString += "\n";
-			contextString += $"nesdev_{functionDeclaration.Identifier}:" + "\n";
+			contextString += $"mossy_{functionDeclaration.Identifier}:" + "\n";
 			contextString += ConvertContext(functionDeclaration.Body);
 			contextString += "lda #$00" + "\n";
 			contextString += "rts" + "\n";
@@ -450,7 +450,7 @@ tax" + "\n";
 			value += $"lda #${ConvertToHex(functionCall.Size + 3)}" + "\n";
 			value += "sta $02" + "\n";
 			value += "jsr sys_create_context" + "\n";
-			value += $"jsr nesdev_{functionCall.Identifier}" + "\n";
+			value += $"jsr mossy_{functionCall.Identifier}" + "\n";
 			// close context
 			value += $"jsr sys_clear_context" + "\n";
 			value += "pha" + "\n";

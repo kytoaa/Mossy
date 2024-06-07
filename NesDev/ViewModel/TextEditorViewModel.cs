@@ -4,12 +4,14 @@ using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using System.Linq;
 using System.Windows.Input;
+using System.IO;
 
 namespace NesDev.ViewModel;
 
 public class TextEditorViewModel : INotifyPropertyChanged
 {
 	private string _text = "";
+	private string _output = "";
 	public string Text 
 	{
 		get => _text;
@@ -19,12 +21,26 @@ public class TextEditorViewModel : INotifyPropertyChanged
 			SetProperty();
 		}
 	}
+	public string Output
+	{
+		get => _output;
+		set
+		{
+			_output = value;
+			SetProperty();
+		}
+	}
 
 	private Model.TextEditor.TextEditor editor;
 
 	public TextEditorViewModel()
 	{
 		editor = new Model.TextEditor.TextEditor();
+		Output = "Hello, World!";
+	}
+	public TextEditorViewModel(string filePath)
+	{
+		editor = new Model.TextEditor.TextEditor(OpenFile(filePath));
 	}
 
 	public event PropertyChangedEventHandler? PropertyChanged;
@@ -32,6 +48,21 @@ public class TextEditorViewModel : INotifyPropertyChanged
 	public void SetProperty([CallerMemberName] string propertyName = null)
 	{
 		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+	}
+
+	public void Initialize()
+	{
+		Text = editor.Buffer;
+	}
+
+	public string OpenFile(string path)
+	{
+		if (Path.Exists(path))
+		{
+			return File.ReadAllText(path);
+		}
+		Output = "File does not exist!";
+		return "";
 	}
 
 	public void OnTextChanged(TextEvent e, Action handler, Action<int> setCaret)
