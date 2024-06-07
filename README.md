@@ -1,7 +1,5 @@
-# NesDevCompiler
-
-Name temporary (maybe)
-This is a project focused on compiling custom code from a .nesdev file to 6502 assembly built for the NES architecture.
+# Mossy Compiler
+This is a project focused on compiling custom code from a .mos file to 6502 assembly built for the NES architecture.
 
 This is a wip so far, but if you'd like to help, get in touch with the authors and we'll respond soon!
 Also some of the code is horrible so if you think you'd like to fix it a bit go ahead!
@@ -57,7 +55,7 @@ ________________________________________________________________________________
 
 <b>Weird Language Quirks</b>
 
-The NesDev language has a few quirks that may seem strange, we will try to document all of them and our reasoning for them.
+The Mossy language has a few quirks that may seem strange, we will try to document all of them and our reasoning for them.
 
 <b>Function Expression Evaluation</b> - Functions cannot be used in expressions, for example, this code is valid `myVar = MyFunc();` however this code will throw a compile error `myVar = (MyFunc() + 1)`. This decision was made to simplify the parsing of mathematical expressions, and may potentially be fixed in the future.
 
@@ -72,7 +70,7 @@ int MyFunction() {
     }
 }
 ```
-You have to do this in NesDev
+You have to do this in Mossy
 ```
 func int MyFunction() {
     var int myLocalInt = 1;
@@ -83,7 +81,7 @@ func int MyFunction() {
 }
 ```
 
-<b>Optional Return Statements</b> - Return statements are optional in NesDev, however if a function reaches its end without returning a value it will return `$00`, so `0` or `false`.
+<b>Optional Return Statements</b> - Return statements are optional in Mossy, however if a function reaches its end without returning a value it will return `$00`, so `0` or `false`.
 
 <b>No For Loops</b> - For loops don't exist, this is because while loops are all you need, and in reality isn't a for loop just syntactic sugar for a while loop.
 This in c#
@@ -92,7 +90,7 @@ for (int i = 0; i < someNumber; i++) {
     // code goes here
 }
 ```
-Becomes this in NesDev
+Becomes this in Mossy
 ```
 var int i = 0;
 while (i < someNumber) {
@@ -101,9 +99,9 @@ while (i < someNumber) {
 }
 ```
 
-<b>No Assignment Operators</b> - NesDev doesn't have assignment operators like `+=` or `-=`, this is because theyre unnecessary and are just syntactic sugar.
+<b>No Assignment Operators</b> - Mossy doesn't have assignment operators like `+=` or `-=`, this is because theyre unnecessary and are just syntactic sugar.
 
-<b>No Multiplication</b> - NesDev doesn't have multiplication or division, this is because the NES doesn't have multiplication or division, and it would either result in large amounts of bloat, or just compile to a function call. Therefore we let <b>you</b>, the programmer implement it yourself.
+<b>No Multiplication</b> - Mossy doesn't have multiplication or division, this is because the NES doesn't have multiplication or division, and it would either result in large amounts of bloat, or just compile to a function call. Therefore we let <b>you</b>, the programmer implement it yourself.
 Here is a basic multiplication function you could use
 ```
 func int Multiply(int x; int y;) {
