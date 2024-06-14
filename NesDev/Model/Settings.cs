@@ -79,7 +79,7 @@ public static class Settings
         public EditorSettings()
         {
             cc65Address = string.Empty;
-            mossyAddress = string.Empty;
+            mossyAddress = AppDomain.CurrentDomain.BaseDirectory;
             colours = new Color[6];
         }
 

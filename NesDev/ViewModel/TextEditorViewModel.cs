@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Input;
 using System.IO;
 using System.Web;
+using Liken.Model;
 
 namespace Liken.ViewModel;
 
@@ -96,6 +97,21 @@ public class TextEditorViewModel : IViewModel
 			SetProperty();
 		}
 	}
+	private ICommand _compileCommand;
+	public ICommand CompileCommand
+	{
+		get
+		{
+			if (_compileCommand == null)
+				_compileCommand = new Command(Compile);
+			return _compileCommand;
+		}
+		set
+		{
+			_compileCommand = value;
+			SetProperty();
+		}
+	}
 	#endregion
 
 	private Model.TextEditor.TextEditor editor;
@@ -109,6 +125,7 @@ public class TextEditorViewModel : IViewModel
 		_saveAsCommand = new Command(SaveFileAs);
 		_openCommand = new Command(Open);
 		_newCommand = new Command(NewFile);
+		_compileCommand = new Command(Compile);
 	}
 	public TextEditorViewModel(string filePath)
 	{
@@ -118,6 +135,7 @@ public class TextEditorViewModel : IViewModel
 		_saveAsCommand = new Command(SaveFileAs);
 		_openCommand = new Command(Open);
 		_newCommand = new Command(NewFile);
+		_compileCommand = new Command(Compile);
 	}
 
 	public event PropertyChangedEventHandler? PropertyChanged;
@@ -136,6 +154,7 @@ public class TextEditorViewModel : IViewModel
 	{
 		if (Path.Exists(path))
 		{
+			_path = path;
 			return File.ReadAllText(path);
 		}
 		Output = "File does not exist!";
@@ -321,6 +340,26 @@ public class TextEditorViewModel : IViewModel
 	public void Close()
 	{
 
+	}
+
+	private void Compile()
+	{
+		if (string.IsNullOrEmpty(_path))
+		{
+			Output += "\n" + "File not saved! Please save file before compiling";
+			return;
+		}
+		if (string.IsNullOrEmpty(Settings.CurrentSettings.mossyAddress))
+		{
+			Output += "\n" + "Mossy address not specified!";
+			return;
+		}
+		Process.Start(new ProcessStartInfo()
+		{
+			FileName = Settings.CurrentSettings.mossyAddress + "/mossy.exe",
+			Arguments = "build " + _path,
+		});
+		Output += "\n" + "Compiled!";
 	}
 
 	public class Command : ICommand

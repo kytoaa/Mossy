@@ -37,7 +37,9 @@ namespace Liken.View
 
 		private void ButtonSettingsOpen_Click(object sender, RoutedEventArgs e)
 		{
-
+			var settings = new View.SettingsWindow();
+			settings.Owner = this;
+			settings.Show();
 		}
 	}
 }

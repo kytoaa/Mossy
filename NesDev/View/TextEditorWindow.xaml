@@ -27,6 +27,7 @@
                     <MenuItem Header="Save" FontFamily="Consolas" Command="{Binding Path=SaveCommand}" />
                     <MenuItem Header="Save As" FontFamily="Consolas" Command="{Binding Path=SaveAsCommand}" />
                 </MenuItem>
+                <MenuItem Header="Compile" FontFamily="Consolas" Command="{Binding Path=CompileCommand}"/>
             </Menu>
             <!--<StackPanel Grid.Column="0" Orientation="Horizontal">
                 <Button FontFamily="Consolas" FontSize="15" Click="ButtonFileOpen_Click">Open</Button>
