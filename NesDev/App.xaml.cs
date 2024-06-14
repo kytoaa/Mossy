@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace NesDev
+namespace Liken
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

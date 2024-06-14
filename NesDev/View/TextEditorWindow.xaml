@@ -1,17 +1,53 @@
-﻿<Window x:Class="NesDev.View.TextEditorWindow"
+﻿<Window x:Class="Liken.View.TextEditorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:NesDev.View"
+        xmlns:local="clr-namespace:Liken.View"
         mc:Ignorable="d"
-        Title="Window1" Height="450" Width="800">
+        Title="Liken" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="300" />
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <local:CodeBox Grid.Row="0" x:Name="CodeInput" Text="{Binding Path=Text}" FontFamily="Consolas" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" Grid.RowSpan="2"></local:CodeBox>
-        <TextBlock Grid.Row="1" Text="{Binding Path=Output}" FontFamily="Consolas"></TextBlock>
+
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Menu Grid.Column="0" Name="FileMenu">
+                <MenuItem Header="File" FontFamily="Consolas">
+                    <MenuItem Header="Open" FontFamily="Consolas" Command="{Binding Path=OpenCommand}" />
+                    <MenuItem Header="New" FontFamily="Consolas" Command="{Binding Path=NewCommand}" />
+                    <Separator />
+                    <MenuItem Header="Save" FontFamily="Consolas" Command="{Binding Path=SaveCommand}" />
+                    <MenuItem Header="Save As" FontFamily="Consolas" Command="{Binding Path=SaveAsCommand}" />
+                </MenuItem>
+            </Menu>
+            <!--<StackPanel Grid.Column="0" Orientation="Horizontal">
+                <Button FontFamily="Consolas" FontSize="15" Click="ButtonFileOpen_Click">Open</Button>
+                <Button FontFamily="Consolas" FontSize="15" Click="ButtonFileNew_Click">New</Button>
+                <Button FontFamily="Consolas" FontSize="15" Click="ButtonFileSave_Click">Save</Button>
+            </StackPanel>-->
+            <Button Grid.Column="1" FontFamily="Consolas" FontSize="15" Click="ButtonSettingsOpen_Click">Settings</Button>
+        </Grid>
+        
+        <local:CodeBox Grid.Row="1" x:Name="CodeInput" Text="{Binding Path=Text}" FontFamily="Consolas" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible" BorderThickness="0"></local:CodeBox>
+        <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="Black" ShowsPreview="True" Height="5" />
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text="{Binding Path=Output}" FontFamily="Consolas"></TextBlock>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Black" ShowsPreview="True" Width="5" />
+        </Grid>
     </Grid>
 </Window>

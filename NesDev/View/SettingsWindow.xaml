@@ -1,0 +1,56 @@
+﻿<Window x:Class="Liken.View.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Liken.View"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="800">
+
+    <Grid Margin="10">
+        <StackPanel>
+            <TextBlock FontSize="25" FontWeight="Bold" FontFamily="Consolas">Style</TextBlock>
+            <Control Height="10" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="100" FontFamily="Consolas">Mossy Address</TextBlock>
+                <Control Width="7" />
+                <TextBox FontFamily="Consolas" Text="{Binding Path=MossyAddress}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="100" FontFamily="Consolas">cc65 Address</TextBlock>
+                <Control Width="7" />
+                <TextBox FontFamily="Consolas" Text="{Binding Path=CC65Address}"></TextBox>
+            </StackPanel>
+            <Control Height="40" />
+            <TextBlock FontSize="25" FontWeight="Bold" FontFamily="Consolas">Style</TextBlock>
+            <Control Height="10" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="100" FontFamily="Consolas">Background</TextBlock>
+                <TextBlock FontFamily="Consolas">#</TextBlock>
+                <TextBox MaxLength="6" FontFamily="Consolas" Text="{Binding Path=BackgroundColour}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="100" FontFamily="Consolas">Highlight</TextBlock>
+                <TextBlock FontFamily="Consolas">#</TextBlock>
+                <TextBox MaxLength="6" FontFamily="Consolas" Text="{Binding Path=HighlightColour}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="100" FontFamily="Consolas">Base Text</TextBlock>
+                <TextBlock FontFamily="Consolas">#</TextBlock>
+                <TextBox MaxLength="6" FontFamily="Consolas" Text="{Binding Path=BaseTextColour}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="100" FontFamily="Consolas">Keywords</TextBlock>
+                <TextBlock FontFamily="Consolas">#</TextBlock>
+                <TextBox MaxLength="6" FontFamily="Consolas" Text="{Binding Path=KeywordColour}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="100" FontFamily="Consolas">Functions</TextBlock>
+                <TextBlock FontFamily="Consolas">#</TextBlock>
+                <TextBox MaxLength="6" FontFamily="Consolas" Text="{Binding Path=FunctionColour}"></TextBox>
+            </StackPanel>
+        </StackPanel>
+
+
+    </Grid>
+</Window>

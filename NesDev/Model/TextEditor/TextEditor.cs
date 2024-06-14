@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Linq;
 
-namespace NesDev.Model.TextEditor;
+namespace Liken.Model.TextEditor;
 
 public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>, IEnumerable<string>
 {
@@ -68,6 +68,14 @@ public class TextEditor : ICloneable, IEquatable<TextEditor>, IEnumerable<char>,
 			}
 			return CursorPos - count;
 		}
+	}
+	public string GetUnderCursor(int offset = 0)
+	{
+		if (CursorPos + offset < 0)
+			return "";
+		if (CursorPos + offset >= Buffer.Length)
+			return "";
+		return Buffer[CursorPos + offset].ToString();
 	}
 
 	public int GetLineLength(int line)

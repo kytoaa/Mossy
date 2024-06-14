@@ -1,6 +1,6 @@
 using System.CodeDom;
 
-namespace NesDev.ViewModel;
+namespace Liken.ViewModel;
 
 public class TextEvent
 {
@@ -25,12 +25,17 @@ public class TextEvent
 		Text,
 		Space,
 		Backspace,
+		Delete,
 		Enter,
 		Tab,
 		Left,
 		Right,
 		Up,
 		Down,
+		End,
+		PageDown,
+		Home,
+		PageUp,
 		CursorPos,
 		Error,
 	}

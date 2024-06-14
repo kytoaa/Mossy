@@ -1,17 +1,18 @@
+using System.CodeDom;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-namespace NesDev.View;
+namespace Liken.View;
 
 public class CodeBox : TextBox
 {
 	public Action<ViewModel.TextEvent, Action, Action<int>>? TextCompositionEvent;
 	private void InvokeComposition(ViewModel.TextEvent textEvent, RoutedEventArgs e) => TextCompositionEvent?.Invoke(textEvent, () => e.Handled = true, c => CaretIndex = c);
 
-	private readonly Key[] Keys = [Key.Space, Key.Enter, Key.Back, Key.Tab, Key.Left, Key.Down, Key.Right, Key.Up];
+	private readonly Key[] Keys = [Key.Space, Key.Enter, Key.Back, Key.Delete, Key.Tab, Key.Left, Key.Down, Key.Right, Key.Up, Key.End, Key.PageDown, Key.Home, Key.PageUp];
 
 	protected override void OnInitialized(EventArgs e)
 	{
@@ -41,6 +42,9 @@ public class CodeBox : TextBox
 				case Key.Back:
 					textEvent = new ViewModel.TextEvent(ViewModel.TextEvent.EventType.Backspace);
 					break;
+				case Key.Delete:
+					textEvent = new ViewModel.TextEvent(ViewModel.TextEvent.EventType.Delete);
+					break;
 				case Key.Tab:
 					textEvent = new ViewModel.TextEvent(ViewModel.TextEvent.EventType.Tab);
 					break;
@@ -55,6 +59,18 @@ public class CodeBox : TextBox
 					break;
 				case Key.Down:
 					textEvent = new ViewModel.TextEvent(ViewModel.TextEvent.EventType.Down);
+					break;
+				case Key.End:
+					textEvent = new ViewModel.TextEvent(ViewModel.TextEvent.EventType.End);
+					break;
+				case Key.PageDown:
+					textEvent = new ViewModel.TextEvent(ViewModel.TextEvent.EventType.PageDown);
+					break;
+				case Key.Home:
+					textEvent = new ViewModel.TextEvent(ViewModel.TextEvent.EventType.Home);
+					break;
+				case Key.PageUp:
+					textEvent = new ViewModel.TextEvent(ViewModel.TextEvent.EventType.PageUp);
 					break;
 				default:
 					textEvent = new ViewModel.TextEvent(ViewModel.TextEvent.EventType.Error);

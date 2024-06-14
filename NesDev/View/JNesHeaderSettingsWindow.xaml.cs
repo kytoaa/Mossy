@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace NesDev
+namespace Liken
 {
     /// <summary>
     /// Interaction window for setting iNES header settings

@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Navigation;
-using NesDev.ViewModel;
+using System.Windows.Input;
+using Liken.ViewModel;
 
-namespace NesDev.View
+namespace Liken.View
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
@@ -33,5 +34,10 @@ namespace NesDev.View
             CodeInput.TextCompositionEvent = _viewModel.OnTextChanged;
             _viewModel.Initialize();
         }
+
+		private void ButtonSettingsOpen_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
 	}
 }
