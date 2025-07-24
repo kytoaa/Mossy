@@ -8,40 +8,13 @@ public class Assembly6502CodeConverter: ICodeConverter
 
 	private int labelCount = 0;// { get { labelCount += 1; return labelCount; } set { labelCount = value; } }
 
-	public string Convert(Node root)
-	{
-		string asm = "";
-		asm += SetupBase();
-		asm += ConvertContext((Context)root, true) + "\n";
-		asm += SetupSys();
-		return asm;
-	}
+  private bool useDefaultResetFunc = true;
+  private bool useDefaultNMIFunc = true;
+  private bool useDefaultIRQFunc = true;
+  private bool useMainFunc = false;
 
-	private string SetupBase()
-	{
-		string value = "";
-		value += @".segment ""HEADER""
-  ; .byte ""NES"", $1A      ; iNES header identifier
-  .byte $4E, $45, $53, $1A
-  .byte 2               ; 2x 16KB PRG code
-  .byte 1               ; 1x  8KB CHR data
-  .byte $01, $00        ; mapper 0, vertical mirroring
-
-.segment ""VECTORS""
-  ;; When an NMI happens (once per frame if enabled) the label nmi:
-  .addr nmi
-  ;; When the processor first turns on or is reset, it will jump to the label reset:
-  .addr reset
-  ;; External interrupt IRQ (unused)
-  .addr 0
-
-; ""nes"" linker config requires a STARTUP section, even if it's empty
-.segment ""STARTUP""
-
-; Main code segment for the program
-.segment ""CODE""
-
-reset:
+  private string defaultResetFunc = @"
+mossy_reset:
   sei		; disable IRQs
   cld		; disable decimal mode
   ldx #$40
@@ -76,7 +49,58 @@ vblankwait2:
   bit $2002
   bpl vblankwait2
 
-main:";
+lda #$80
+sta $2000 ; enable NMI
+
+<resetAppendString>
+
+jmp mossy_forever
+
+";
+  private string defaultIRQFunc = @"
+mossy_irq:
+  rti
+";
+
+  private string[] resetIdentifiers = {"reset", "Reset"};
+  private string[] nmiIdentifiers = {"nmi", "NMI", "NonMaskableInterrupt"};
+  private string[] mainIdentifiers = {"main", "Main"};
+  private string[] irqIdentifiers = {"irq", "IRQ", "InterruptRequest"};
+
+	public string Convert(Node root)
+	{
+		string asm = "";
+		asm += SetupBase();
+		asm += ConvertContext((Context)root, true) + "\n";
+		asm += SetupSys();
+		return asm;
+	}
+
+	private string SetupBase()
+	{
+		string value = "";
+		value += @".segment ""HEADER""
+  ; .byte ""NES"", $1A      ; iNES header identifier
+  .byte $4E, $45, $53, $1A
+  .byte 2               ; 2x 16KB PRG code
+  .byte 1               ; 1x  8KB CHR data
+  .byte $01, $00        ; mapper 0, vertical mirroring
+
+.segment ""VECTORS""
+  ;; When an NMI happens (once per frame if enabled) the label nmi:
+  .addr mossy_nmi
+  ;; When the processor first turns on or is reset, it will jump to the label reset:
+  .addr mossy_reset
+  ;; External interrupt IRQ
+  .addr mossy_irq
+
+; ""nes"" linker config requires a STARTUP section, even if it's empty
+.segment ""STARTUP""
+
+; Main code segment for the program
+.segment ""CODE""
+
+";
 
 		return value;
 	}
@@ -106,12 +130,8 @@ sys_clear_context:
   sty $00
   rts
 
-forever:
-  jmp forever
-
-nmi:
-  ldx #$00 	; Set SPR-RAM address to 0
-  stx $2003
+mossy_forever:
+  jmp mossy_forever
 
 .segment ""CHARS""";
 
@@ -121,47 +141,114 @@ nmi:
 	private string ConvertContext(Context context, bool isGlobal = false)
 	{
 		string contextString = "" + "\n";
-
+    string resetAppendString = "\n";
 		if (isGlobal)
 		{
-			contextString += "\n";
-			contextString += "; setting up global context" + "\n";
-			contextString += $@"lda #${ConvertToHex(context.variables.Sum(v => v.Size) + 4)}
+      // useDefaultResetFunc =
+      //   (context.functions.Any(func => func.Identifier == "Reset" || func.Identifier == "reset"));
+      // useDefaultNMIFunc =
+      //   (context.functions.Any(func => func.Identifier == "NMI" || func.Identifier == "nmi"));
+      // useDefaultIRQFunc =
+      //   (context.functions.Any(func => func.Identifier == "IRQ" || func.Identifier == "irq"));
+			resetAppendString += "\n";
+			resetAppendString += "; setting up global context" + "\n";
+			resetAppendString += $@"lda #${ConvertToHex(context.variables.Sum(v => v.Size) + 4)}
 sta $00
 lda #${ConvertToHex(context.variables.Sum(v => v.Size) + 3)}
 sta $01";
-			contextString += "\n";
+			resetAppendString += "\n";
 		}
 
 		foreach (VariableDeclaration variable in context.variables)
 		{
 			if (isGlobal)
 			{
-				contextString += ConvertVariable(variable);
+				resetAppendString += ConvertVariable(variable);
 			}
 		}
 		if (isGlobal)
 		{
-			List<FunctionDeclaration> mainFuncs = context.functions.Where(f => (f.Identifier == "Main" || f.Identifier == "main")).ToList();
-			if (mainFuncs.Count != 1)
-				throw new Exception("Compile Error: Main function not found!");
-			FunctionDeclaration mainFunc = mainFuncs[0];
-			contextString += $"lda #${ConvertToHex(mainFunc.Size + 3)}" + "\n";
-			contextString += "sta $02" + "\n";
-			contextString += "jsr sys_create_context" + "\n";
-			contextString += $"jsr mossy_{mainFunc.Identifier}" + "\n";
-			// close context
-			contextString += $"jsr sys_clear_context" + "\n" + "\n";
-			contextString += "jmp forever" + "\n";
+			List<FunctionDeclaration> nmiFuncs = context.functions.Where(f => nmiIdentifiers.Contains(f.Identifier)).ToList();
+			List<FunctionDeclaration> mainFuncs = context.functions.Where(f => mainIdentifiers.Contains(f.Identifier)).ToList();
+			if (nmiFuncs.Count > 1)
+				throw new Exception("Compile Error: Too many NMI functions! Try including only one");
+			if (mainFuncs.Count > 1)
+				throw new Exception("Compile Error: Too many Main functions! Try including only one");
+      if (nmiFuncs.Count + mainFuncs.Count == 0)
+        throw new Exception("Compile Error: Could find neither an NMI nor Main function!");
+
+      useDefaultNMIFunc = nmiFuncs.Count == 1;
+      useMainFunc = mainFuncs.Count == 1;
+
+      switch ((mainFuncs.Count() << 1) + nmiFuncs.Count()) { // 1 = NMI only, 2 = Main only, 3 = Both
+        case 1:
+          FunctionDeclaration nmiFunc = nmiFuncs[0];
+          // contextString += $"lda #${ConvertToHex(nmiFunc.Size + 3)}" + "\n";
+          // contextString += "sta $02" + "\n";
+          // contextString += "jsr sys_create_context" + "\n";
+          // contextString += $"jsr mossy_nmi" + "\n";
+          // // close context
+          // contextString += $"jsr sys_clear_context" + "\n" + "\n";
+          // contextString += "jmp mossy_forever" + "\n" + "\n";
+
+          contextString += $"mossy_nmi:" + "\n";
+          contextString += $"lda #${ConvertToHex(nmiFunc.Size + 3)}" + "\n";
+          contextString += "sta $02" + "\n";
+          contextString += "jsr sys_create_context" + "\n";
+          contextString += ConvertContext(nmiFunc.Body);
+          contextString += $"jsr sys_clear_context" + "\n" + "\n";
+          contextString += "rti" + "\n";
+          break;
+        case 2:
+          throw new Exception("Compile Error: No NMI function detected!"); // may include support for default nmi function later
+          //break;
+        case 3:
+          throw new NotImplementedException("TODO: Work on including Main and NMI together");
+        default:
+          break;
+      }
+			// FunctionDeclaration mainFunc = mainFuncs[0];
+			// contextString += $"lda #${ConvertToHex(mainFunc.Size + 3)}" + "\n";
+			// contextString += "sta $02" + "\n";
+			// contextString += "jsr sys_create_context" + "\n";
+			// contextString += $"jsr mossy_{mainFunc.Identifier}" + "\n";
+			// // close context
+			// contextString += $"jsr sys_clear_context" + "\n" + "\n";
+			// contextString += "jmp mossy_forever" + "\n";
 		}
 		foreach (FunctionDeclaration functionDeclaration in context.functions)
 		{
+      if (nmiIdentifiers.Contains(functionDeclaration.Identifier) || mainIdentifiers.Contains(functionDeclaration.Identifier))
+        continue;
 			contextString += "\n";
-			contextString += $"mossy_{functionDeclaration.Identifier}:" + "\n";
+
+      if (resetIdentifiers.Contains(functionDeclaration.Identifier)) {
+        contextString += $"mossy_reset:" + "\n";
+        useDefaultResetFunc = false;
+      }
+      else if (irqIdentifiers.Contains(functionDeclaration.Identifier)) {
+        contextString += $"mossy_irq:" + "\n";
+        useDefaultIRQFunc = false;
+      }
+      else contextString += $"mossy_{functionDeclaration.Identifier}:" + "\n";
+
 			contextString += ConvertContext(functionDeclaration.Body);
-			contextString += "lda #$00" + "\n";
-			contextString += "rts" + "\n";
+
+      if (resetIdentifiers.Contains(functionDeclaration.Identifier))
+        contextString = contextString.Replace("<resetAppendString>", resetAppendString);
+      else if (irqIdentifiers.Contains(functionDeclaration.Identifier)) {}
+      else {
+        contextString += "lda #$00" + "\n";
+        contextString += "rts" + "\n";
+      }
 		}
+    if (isGlobal) {
+      if (useDefaultResetFunc)
+        contextString += defaultResetFunc.Replace("<resetAppendString>", resetAppendString);
+      if (useDefaultIRQFunc)
+        contextString += defaultIRQFunc;
+    }
+
 		foreach (IStatement statement in context.statements)
 		{
 			contextString += "\n";
