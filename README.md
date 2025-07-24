@@ -17,6 +17,25 @@ The header defaults to:
 # Assembler
 We currently only support 6502 code written for the cc65 assembler. We plan to add functionality for more assemblers like NesASM.
 
+# The Game Loop
+Almost all known NES games used one of three ways to create a game loop:
+#### Main function only
+All gameplay logic, graphics and audio is executed in a main function that runs in a loop, and the NMI interrupt handler is only used to set an internal flag to let the main loop know that VBlank has begun.
+#### NMI interrupt handler only
+All gameplay logic, graphics and audio is executed in the NMI interrupt handler, which returns once complete to a spin loop that idles until the next NMI interrupt.
+#### NMI and Main functions
+All graphics and audio is handled by the NMI interrupt handler, which then passes execution to the main loop where the gameplay logic is.
+
+As of now, Mossy only supports the second method. We are planning to implement support for the third, but the first will remain unsupported as we consider it bad practice. Thus, every program must contain an NMI function to hold the NMI interrupt handler, like so:
+
+```
+func int NMI() {
+  // code goes here
+}
+```
+This is all that is needed for a game loop. </br>
+N.B. it is also possible to change the Mossy default Reset interrupt handler, although without any way to access any memory location yet, this is not recommended right now. No such default override is possible with the IRQ interrupt.
+
 # The Language
 <b>Core</b>
 
